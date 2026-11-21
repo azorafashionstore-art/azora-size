@@ -335,7 +335,7 @@ const EN = {
   r4:'Fit note', r5:'Take a screenshot of this screen and send it to us with your order.',
   r6:'This is a general recommendation. Fit can vary a little by style and fabric. Not sure? Message us and we’ll help.'
 };
-const PIECE_EN = {blouse:'Blouse', blazer:'Blazer', dress:'Dress', pants:'Pants', set:'Set', suit:'Suit', twins:'Twins', 'half-tunic':'Half Tunic', 'tunic-dress':'Tunic Dress', tunic:'Tunic'};
+const PIECE_EN = {blouse:'Blouse', blazer:'Blazer', dress:'Dress', pants:'Pants', set:'Set', suit:'Suit', twins:'Twins', 'half-tunic':'Half Tunic', 'tunic-dress':'Tunic Dress', tunic:'Tunic', salopette:'Overalls'};
 const pn = p => lang==='en' ? (p.en || PIECE_EN[p.code] || p.name) : p.name;
 function applyLang(){
   document.documentElement.lang = lang; document.documentElement.dir = lang==='en' ? 'ltr' : 'rtl';
