@@ -333,7 +333,7 @@ async function fetchSheet(){
 }
 
 let st = {piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, fit:'regular', step:-1, sel:null, last:null};
-try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','shape','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); } catch(_){}
+try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); if (s.shape) Object.assign(st.shape, s.shape); } catch(_){}
 const save = () => { try { localStorage.setItem('azora-size2', JSON.stringify(st)); } catch(_){} };
 const P = () => PIECES.find(p=>p.code===st.piece);
 const list = () => SIZE_ORDER.map(n=>({n}));
