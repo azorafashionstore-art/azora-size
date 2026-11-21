@@ -80,6 +80,10 @@ h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4
 .seg button{min-height:48px;border:1px solid var(--line);background:transparent;border-radius:6px;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--blush);border-color:var(--pink);color:var(--pinkInk);font-weight:500}
 .thanks{text-align:center;padding:40px 0}.thanks h1{color:var(--pinkInk)}
+.lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:-6px 0 16px}
+.lines button{min-height:64px;border:1px solid var(--line);border-radius:8px;background:transparent;cursor:pointer;padding:10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.lines b{font-weight:500;font-size:17px}.lines span{font-size:12px;color:var(--mute)}
+.lines button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}.lines button[aria-pressed=true] span{color:#f3d6df}
 .load{color:var(--mute);font-size:14px;text-align:center;padding:30px 0}
 /* step 1 */
 .body1{display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;align-items:center}
@@ -167,6 +171,7 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
   <section class="step" id="s0">
     <h1>هتشتري إيه؟</h1>
     <p class="sub">كل قطعة ليها مقاسها. اختاري نوع القطعة الأول.</p>
+    <div class="lines" id="lines" role="group" aria-label="خط المنتجات"></div>
     <div class="pieces" id="pieces"><div class="load">لحظة واحدة...</div></div>
   </section>
 
@@ -254,12 +259,17 @@ const SHEET_ID = '1Lag0AgMM4G018BO1nHmR5EzG9tY8067Mcc5TamkKVfo';
 const FEEDBACK_ON = false;
 // رابط Apps Script اللي بيسجل آراء العميلات في تبويب "الآراء" في نفس الشيت
 const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbwIara_FrBmRo74dzAAFEkn-E9_D3pQ4VQSqck6WvZGjVrRM9KbaX8iRrOe-U2Yok1q/exec';
+// خطوط المنتجات: كل خط ليه تبويب قطع وتبويب مقاسات في الشيت
+const LINES = [
+  {k:'casual', name:'كاجوال', d:'لبس يومي مريح', tabs:['قطع كاجوال','مقاسات كاجوال']},
+  {k:'lady',   name:'ليدي',   d:'أناقة للمناسبات والشغل', tabs:['قطع ليدي','مقاسات ليدي']}
+];
 // مقاسات أزورا الثابتة، من الأصغر للأكبر
 const SIZE_ORDER = ['L','XL','2XL','3XL'];
 const normSize = v => { let t = String(v||'').trim().toUpperCase().replace(/\s+/g,'');
   return ({'لارج':'L','LARGE':'L','اكسلارج':'XL','XXL':'2XL','2X':'2XL','XXXL':'3XL','3X':'3XL'})[t] || t; };
 // قواعد احتياطية (تجريبية) بنفس شكل الشيت
-const FALLBACK = {
+const FALLBACK1 = {
   pieces: [
     // [كود، اسم، صدر، بطن، أرداف، ضيق، واسع، صورة، ظاهر]
     ['blouse','بلوزة','نعم','نعم','لا',0,1,'',true],
@@ -278,6 +288,13 @@ const FALLBACK = {
     return out;
   })()
 };
+const FALLBACK = {casual: FALLBACK1, lady: (() => {
+  const extra = [['twins','توينز'],['half-tunic','هاف تونيك'],['tunic-dress','فستان تونيك'],['tunic','تونيك']];
+  const pieces = [...FALLBACK1.pieces, ...extra.map(([c,n])=>[c,n,'نعم','نعم','نعم',0,1,'',true])];
+  const sizes = [...FALLBACK1.sizes];
+  extra.forEach(([c])=>SIZE_ORDER.forEach((s,i)=>sizes.push([c, s, [35,63,73,85][i], [62,72,84,150][i], '', ''])));
+  return {pieces, sizes};
+})()};
 // =====================================================
 
 // لينك صورة من جوجل درايف بيتحول لرابط صورة مباشر
@@ -300,21 +317,32 @@ let PIECES = [], SIZES = {};
 
 function load(raw){
   const off = v => /^(false|لا|0|no|مخفي|x)$/i.test(String(v??'').trim());
-  PIECES = raw.pieces.filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>({
-    code:String(r[0]).trim().toLowerCase(), name:String(r[1]).trim(),
-    areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
-    slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim()
-  }));
-  SIZES = {};
-  raw.sizes.forEach(r=>{
-    const p = PIECES.find(x=>x.name===String(r[0]).trim() || x.code===String(r[0]).trim().toLowerCase());
-    const n = normSize(r[1]);
-    if (!p || !SIZE_ORDER.includes(n) || (num(r[2])==null && num(r[3])==null)) return;
-    (SIZES[p.code] ||= []).push({n, w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])});
-  });
-  PIECES = PIECES.filter(p=>SIZES[p.code]?.length);
+  PIECES = []; SIZES = {};
+  const build = (L, d) => {
+    const mine = (d.pieces||[]).filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>{
+      const code = String(r[0]).trim().toLowerCase();
+      return {key:`${L.k}-${code}`, code, line:L.k, name:String(r[1]).trim(),
+        areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
+        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim()};
+    });
+    (d.sizes||[]).forEach(r=>{
+      const p = mine.find(x=>x.name===String(r[0]).trim() || x.code===String(r[0]).trim().toLowerCase());
+      const n = normSize(r[1]);
+      if (!p || !SIZE_ORDER.includes(n) || (num(r[2])==null && num(r[3])==null)) return;
+      (SIZES[p.key] ||= []).push({n, w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])});
+    });
+    return mine.filter(p=>SIZES[p.key]?.length);
+  };
+  for (const L of LINES){
+    let got = raw[L.k] ? build(L, raw[L.k]) : [];
+    // before the كاجوال tabs exist, the old القطع / المقاسات tabs count as كاجوال
+    if (!got.length && L.k==='casual' && raw.legacy) got = build(L, raw.legacy);
+    PIECES.push(...got);
+  }
   PIECES.forEach(p=>{ if(!p.areas.length) p.areas=['chest','stomach','hips']; });
 }
+const linesOn = () => LINES.filter(L=>PIECES.some(p=>p.line===L.k));
+const lineName = k => LINES.find(L=>L.k===k)?.name || '';
 function csv(t){
   const rows=[]; let row=[], f='', q=false;
   for (let i=0;i<t.length;i++){ const c=t[i];
@@ -326,16 +354,22 @@ function csv(t){
 }
 async function fetchSheet(){
   const u = n => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}`;
-  const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 7000);
-  const [a,b] = await Promise.all([u('القطع'),u('المقاسات')].map(x=>fetch(x,{signal:ctl.signal,cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.text();})));
-  clearTimeout(tm);
-  return {pieces:csv(a), sizes:csv(b)};
+  const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 8000);
+  const get = n => fetch(u(n),{signal:ctl.signal,cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.text();}).then(csv).catch(()=>null);
+  const names = [...LINES.flatMap(L=>L.tabs), 'القطع', 'المقاسات'];
+  const got = await Promise.all(names.map(get)); clearTimeout(tm);
+  const by = Object.fromEntries(names.map((n,i)=>[n,got[i]]));
+  if (got.every(x=>x==null)) throw 0;
+  const raw = {};
+  LINES.forEach(L=>{ raw[L.k] = {pieces:by[L.tabs[0]]||[], sizes:by[L.tabs[1]]||[]}; });
+  raw.legacy = {pieces:by['القطع']||[], sizes:by['المقاسات']||[]};
+  return raw;
 }
 
-let st = {piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, fit:'regular', step:-1, sel:null, last:null};
+let st = {line:null, piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, fit:'regular', step:-1, sel:null, last:null};
 try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); if (s.shape) Object.assign(st.shape, s.shape); } catch(_){}
 const save = () => { try { localStorage.setItem('azora-size2', JSON.stringify(st)); } catch(_){} };
-const P = () => PIECES.find(p=>p.code===st.piece);
+const P = () => PIECES.find(p=>p.key===st.piece);
 const list = () => SIZE_ORDER.map(n=>({n}));
 
 // base size from the owner's rules: a row whose weight (and height, if set) range fits; else nearest by weight
@@ -364,8 +398,9 @@ function rec(){
 // step 0
 function piecesHTML(){
   const esc = t => t.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  return PIECES.map(p=>`<button type="button" data-p="${esc(p.code)}" aria-pressed="${st.piece===p.code}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(()=>{ const u = SIZE_ORDER.filter(n=>(SIZES[p.code]||[]).some(r=>r.n===n)); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
+  return PIECES.filter(p=>p.line===st.line).map(p=>`<button type="button" data-p="${esc(p.key)}" aria-pressed="${st.piece===p.key}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(()=>{ const u = SIZE_ORDER.filter(n=>(SIZES[p.key]||[]).some(r=>r.n===n)); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
 }
+$('lines').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.line=b.dataset.l; if (P()?.line!==st.line) st.piece=null; render(); });
 $('pieces').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; render(); });
 
 // step 1
@@ -397,10 +432,10 @@ $('fits').addEventListener('click', e=>{ const b=e.target.closest('button'); if(
 // result
 function result(){
   const p = P(), L = list(), r = rec(), i = st.sel ?? r.i;
-  $('rpiece').textContent = p.name;
+  $('rpiece').textContent = linesOn().length>1 ? `${p.name} · ${lineName(p.line)}` : p.name;
   const today = new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
   $('rref').textContent = today;
-  st.last = {piece:p.code, name:p.name, size:L[r.i].n};
+  st.last = {piece:p.key, name:p.name, size:L[r.i].n};
   $('rsz').textContent = L[i].n;
   // how each area sits in size i: + roomy, − snug
   const ds = p.areas.map(a=>({a, d: (i - r.base) - (st.shape[a]-1)}));
@@ -427,16 +462,20 @@ $('sizes').addEventListener('click', e=>{ const b=e.target.closest('button'); if
 function render(){
   if (!PIECES.length) return;
   const w = st.step===-1; $('sw').hidden=!w; $('hd').hidden=w; $('mn').hidden=w; $('ft').hidden=w;
+  const LO = linesOn();
+  if (!LO.some(L=>L.k===st.line)) st.line = LO[0]?.k;
+  $('lines').hidden = LO.length < 2;
+  $('lines').innerHTML = LO.map(L=>`<button type="button" data-l="${L.k}" aria-pressed="${st.line===L.k}"><b>${L.name}</b><span>${L.d}</span></button>`).join('');
   $('pieces').innerHTML = piecesHTML();
   for (let k=0;k<=5;k++) $('s'+k).classList.toggle('show', st.step===k);
   $('prog').hidden = $('stepno').parentNode.hidden = st.step===5;
-  const L0 = st.last && PIECES.find(p=>p.code===st.last.piece);
+  const L0 = st.last && PIECES.find(p=>p.key===st.last.piece);
   $('again').hidden = !L0;
   if (L0) $('again').innerHTML = `أهلًا بيكي تاني! آخر مرة مقاسك في ${L0.name} كان <b>${st.last.size}</b><button type="button" id="seeLast">شوفي نتيجتك</button>`;
   $('fbl').hidden = !(FEEDBACK_ON && FEEDBACK_URL);
   [...$('prog').children].forEach((x,k)=>x.classList.toggle('on', k <= Math.min(st.step,3)));
   $('stepno').textContent = st.step<4 ? `0${st.step+1} / 04` : 'النتيجة';
-  $('pname').textContent = st.step>0 && P() ? P().name : '';
+  $('pname').textContent = st.step>0 && P() ? (LO.length>1 ? `${P().name} · ${lineName(P().line)}` : P().name) : '';
   $('back').hidden = false;
   $('next').disabled = (st.step===0 && !P()) || (st.step===5 && (!fb.fit || fbSent));
   $('next').classList.toggle('ghost', st.step===4);
@@ -459,16 +498,16 @@ $('next').addEventListener('click', ()=>{
   st.sel=null; render(); window.scrollTo(0,0);
 });
 $('back').addEventListener('click', ()=>{ st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : st.step-1; render(); window.scrollTo(0,0); });
-$('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
+$('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.line=P()?.line||st.line; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
 $('fbl').addEventListener('click', ()=>{ st.step=5; render(); window.scrollTo(0,0); });
 
 // feedback
 const fb = {piece:null, size:null, fit:null}; let fbSent = false;
 function fbRender(){
-  if (!fb.piece) fb.piece = st.last?.piece || PIECES[0].code;
+  if (!fb.piece) fb.piece = st.last?.piece || PIECES[0].key;
   const sizes = list();
   if (!fb.size || !sizes.some(s=>s.n===fb.size)) fb.size = (st.last?.piece===fb.piece && st.last.size) || sizes[0]?.n;
-  $('fbp').innerHTML = PIECES.map(p=>`<option value="${p.code}" ${p.code===fb.piece?'selected':''}>${p.name}</option>`).join('');
+  $('fbp').innerHTML = PIECES.map(p=>`<option value="${p.key}" ${p.key===fb.piece?'selected':''}>${p.name} · ${lineName(p.line)}</option>`).join('');
   $('fbs').innerHTML = sizes.map(s=>`<option ${s.n===fb.size?'selected':''}>${s.n}</option>`).join('');
   document.querySelectorAll('#fbfit button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.v===fb.fit));
   $('fbform').hidden = fbSent; $('fbok').hidden = !fbSent;
@@ -479,7 +518,7 @@ $('fbfit').addEventListener('click', e=>{ const b=e.target.closest('button'); if
 async function fbSend(){
   if (!fb.fit || fbSent) return;
   const shape = Object.entries(st.shape).map(([a,i])=>`${AREAS[a].name}: ${AREAS[a].o[i]}`).join('، ');
-  const data = new URLSearchParams({piece: PIECES.find(p=>p.code===fb.piece)?.name||fb.piece, size: fb.size||'', result: fb.fit,
+  const data = new URLSearchParams({piece: (p=>p?`${p.name} · ${lineName(p.line)}`:fb.piece)(PIECES.find(p=>p.key===fb.piece)), size: fb.size||'', result: fb.fit,
     recommended: st.last?.piece===fb.piece ? st.last.size : '', height: st.h, weight: st.w, shape, style: FITS.find(f=>f.k===st.fit).n,
     note: $('fbn').value.slice(0,500), contact: $('fbc').value.slice(0,100)});
   $('next').disabled = true; $('next').textContent = 'بيتبعت...';
@@ -496,9 +535,12 @@ let hashPiece = false;
   load(raw);
   if (!PIECES.length){ load(FALLBACK); src = 'fallback'; }
   if (location.hash==='#check'){ const d=document.createElement('p'); d.className='fine';
-    d.textContent = src==='sheet' ? `متصل بالشيت ✓ (${PIECES.length} قطع)` : 'مش قادر يقرا الشيت، شغال بالجدول الاحتياطي'; $('sw').appendChild(d); }
+    d.textContent = src==='sheet' ? `متصل بالشيت ✓ (${linesOn().map(L=>`${L.name}: ${PIECES.filter(p=>p.line===L.k).length}`).join(' · ')||'0 قطع'})` : 'مش قادر يقرا الشيت، شغال بالجدول الاحتياطي'; $('sw').appendChild(d); }
   const h = location.hash.slice(1).toLowerCase();
-  if (PIECES.some(p=>p.code===h)){ st.piece=h; hashPiece=true; }
+  // links: #casual / #lady pick a line; #casual-blouse / #lady-dress pick a piece; old #blouse means casual
+  const hk = PIECES.some(p=>p.key===h) ? h : PIECES.some(p=>p.key==='casual-'+h) ? 'casual-'+h : null;
+  if (hk){ st.piece=hk; st.line=P().line; hashPiece=true; }
+  else if (LINES.some(L=>L.k===h)) st.line=h;
   if (h==='feedback' && FEEDBACK_ON && FEEDBACK_URL) st.step=5;
   addEventListener('hashchange', ()=>location.reload());
   render();
