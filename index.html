@@ -254,6 +254,10 @@ const SHEET_ID = '1Lag0AgMM4G018BO1nHmR5EzG9tY8067Mcc5TamkKVfo';
 const FEEDBACK_ON = false;
 // رابط Apps Script اللي بيسجل آراء العميلات في تبويب "الآراء" في نفس الشيت
 const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbwIara_FrBmRo74dzAAFEkn-E9_D3pQ4VQSqck6WvZGjVrRM9KbaX8iRrOe-U2Yok1q/exec';
+// مقاسات أزورا الثابتة، من الأصغر للأكبر
+const SIZE_ORDER = ['L','XL','2XL','3XL'];
+const normSize = v => { let t = String(v||'').trim().toUpperCase().replace(/\s+/g,'');
+  return ({'لارج':'L','LARGE':'L','اكسلارج':'XL','XXL':'2XL','2X':'2XL','XXXL':'3XL','3X':'3XL'})[t] || t; };
 // قواعد احتياطية (تجريبية) بنفس شكل الشيت
 const FALLBACK = {
   pieces: [
@@ -266,8 +270,8 @@ const FALLBACK = {
   ],
   // [القطعة، المقاس، الوزن من، الوزن إلى، الطول من، الطول إلى]
   sizes: (() => {
-    const S = ['S','M','L','XL','2XL','3XL'], W = [[35,52],[53,60],[61,68],[69,77],[78,88],[89,150]];
-    const shift = {blouse:0, blazer:-3, dress:-5, pants:0, set:-2, formal:-3};
+    const S = SIZE_ORDER, W = [[35,62],[63,72],[73,84],[85,150]];
+    const shift = {blouse:0, blazer:-3, dress:-4, pants:0, set:-2, formal:-3};
     const out = [];
     for (const p in shift) S.forEach((s,i)=>out.push([p, s, i===0?35:W[i][0]+shift[p], i===S.length-1?150:W[i][1]+shift[p], '', '']));
     return out;
@@ -302,8 +306,9 @@ function load(raw){
   SIZES = {};
   raw.sizes.forEach(r=>{
     const p = PIECES.find(x=>x.name===String(r[0]).trim() || x.code===String(r[0]).trim().toLowerCase());
-    if (!p || !String(r[1]).trim() || (num(r[2])==null && num(r[3])==null)) return;
-    (SIZES[p.code] ||= []).push({n:String(r[1]).trim(), w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])});
+    const n = normSize(r[1]);
+    if (!p || !SIZE_ORDER.includes(n) || (num(r[2])==null && num(r[3])==null)) return;
+    (SIZES[p.code] ||= []).push({n, w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])});
   });
   PIECES = PIECES.filter(p=>SIZES[p.code]?.length);
   PIECES.forEach(p=>{ if(!p.areas.length) p.areas=['chest','stomach','hips']; });
@@ -329,19 +334,19 @@ let st = {piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, fit:'regula
 try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','shape','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); } catch(_){}
 const save = () => { try { localStorage.setItem('azora-size2', JSON.stringify(st)); } catch(_){} };
 const P = () => PIECES.find(p=>p.code===st.piece);
-const list = () => SIZES[st.piece] || [];
+const list = () => SIZE_ORDER.map(n=>({n}));
 
 // base size from the owner's rules: a row whose weight (and height, if set) range fits; else nearest by weight
+// rows can repeat a weight range with different height ranges; the row matching both wins,
+// otherwise the closest row (weight counts more than height)
 function baseIdx(){
-  const L = list(); let best = -1, bestD = 1e9;
-  L.forEach((s,i)=>{
-    const inH = (s.h0==null || st.h>=s.h0) && (s.h1==null || st.h<=s.h1);
-    const w0 = s.w0 ?? -1e9, w1 = s.w1 ?? 1e9;
-    const d = st.w < w0 ? w0 - st.w : st.w > w1 ? st.w - w1 : 0;
-    const dd = d + (inH ? 0 : 1000);
-    if (dd < bestD){ bestD = dd; best = i; }
+  const rows = SIZES[st.piece] || []; let best = null, bestC = 1e9;
+  const dist = (v,a,b) => v < (a ?? -1e9) ? a - v : v > (b ?? 1e9) ? v - b : 0;
+  rows.forEach(r=>{
+    const c = dist(st.w, r.w0, r.w1) * 10 + dist(st.h, r.h0, r.h1);
+    if (c < bestC){ bestC = c; best = r; }
   });
-  return {i: Math.max(0,best), exact: bestD===0};
+  return {i: best ? SIZE_ORDER.indexOf(best.n) : 0, exact: bestC===0};
 }
 function rec(){
   const p = P(), L = list(), b = baseIdx();
@@ -356,7 +361,7 @@ function rec(){
 // step 0
 function piecesHTML(){
   const esc = t => t.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  return PIECES.map(p=>`<button type="button" data-p="${esc(p.code)}" aria-pressed="${st.piece===p.code}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(SIZES[p.code]||[]).map(s=>s.n).filter((_,i,a)=>i===0||i===a.length-1).join(' – ')}</small></button>`).join('');
+  return PIECES.map(p=>`<button type="button" data-p="${esc(p.code)}" aria-pressed="${st.piece===p.code}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(()=>{ const u = SIZE_ORDER.filter(n=>(SIZES[p.code]||[]).some(r=>r.n===n)); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
 }
 $('pieces').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; render(); });
 
@@ -458,7 +463,7 @@ $('fbl').addEventListener('click', ()=>{ st.step=5; render(); window.scrollTo(0,
 const fb = {piece:null, size:null, fit:null}; let fbSent = false;
 function fbRender(){
   if (!fb.piece) fb.piece = st.last?.piece || PIECES[0].code;
-  const sizes = SIZES[fb.piece] || [];
+  const sizes = list();
   if (!fb.size || !sizes.some(s=>s.n===fb.size)) fb.size = (st.last?.piece===fb.piece && st.last.size) || sizes[0]?.n;
   $('fbp').innerHTML = PIECES.map(p=>`<option value="${p.code}" ${p.code===fb.piece?'selected':''}>${p.name}</option>`).join('');
   $('fbs').innerHTML = sizes.map(s=>`<option ${s.n===fb.size?'selected':''}>${s.n}</option>`).join('');
