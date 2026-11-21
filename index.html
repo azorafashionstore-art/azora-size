@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="logo.png">
+<meta property="og:image" content="logo.png">
+<title>مقاسك في أزورا</title>
+<meta property="og:title" content="اعرفي مقاسك في أزورا">
+<meta property="og:description" content="4 خطوات بسيطة وتعرفي مقاسك المظبوط في أي قطعة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap">
+<style>
+/*
+VOICE: hushed boutique fitting room, few words, lots of air
+IDEA: a tailor's fitting card filled in over four quiet steps
+PICTURE: the live figure, then the size ring card made to be screenshotted
+COLOUR and TYPE: Azora white and black with the logo's pink as the one accent; IBM Plex Sans Arabic light/medium
+LAYOUT: one calm column, progress lines at top, sticky action button at the foot
+*/
+:root{color-scheme:light;
+/* لون أزورا: غيّر --pink للون اللوجو بالظبط */
+--pink:#a3345a;--pinkInk:#86203f;--blush:#f9ecf0;
+--bg:#f7f3f4;--paper:#ffffff;--ink:#111111;--mute:#8a7f82;--line:#ece3e6;--soft:var(--blush);--rose:var(--pinkInk)}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans Arabic",Tahoma,sans-serif;overflow-x:clip}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+.app{max-width:520px;min-height:100vh;min-height:100dvh;margin:0 auto;background:var(--paper);display:flex;flex-direction:column}
+header{padding:calc(18px + env(safe-area-inset-top)) 22px 0}
+.logo{display:flex;justify-content:center;align-items:center;height:40px}
+.logo img{height:40px;width:auto}.logo span,.wl span{font-weight:500;letter-spacing:.32em;font-size:14px;direction:ltr;color:var(--ink)}
+.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;background:radial-gradient(120% 70% at 50% 0%,var(--blush),var(--paper) 70%)}
+.wl{display:grid;place-items:center;width:min(78vw,300px)}
+.wl img{width:100%;height:auto}.wl span{font-size:22px}
+.wl::after{content:"";width:46px;height:1px;background:var(--pink);margin-top:26px}
+.welcome h1{font-size:clamp(30px,8vw,38px);margin-top:24px}
+.welcome h1 em{font-style:normal;color:var(--pinkInk)}
+.welcome p{color:var(--mute);margin:8px 0 0;max-width:22em}
+.welcome .go{flex:none;width:min(100%,320px);margin-top:34px}
+.welcome .steps4{display:flex;gap:10px 14px;justify-content:center;margin-top:26px;font-size:13px;color:var(--mute);flex-wrap:wrap}
+.welcome .steps4 b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blush);color:var(--pinkInk);font-size:12px;font-weight:600;margin-inline-end:6px}
+.kick{text-align:center;color:var(--mute);font-size:13px;margin-top:2px}
+.prog{display:flex;gap:6px;margin-top:18px}
+.prog i{flex:1;height:2px;background:var(--line);transition:background .3s}
+.prog i.on{background:var(--pink)}
+.stepno{font-size:12px;color:var(--mute);margin-top:8px;display:flex;justify-content:space-between}
+.stepno span:last-child{direction:ltr}
+main{flex:1;padding:6px 22px 24px}
+h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4px;text-wrap:balance}
+.sub{color:var(--mute);margin:0 0 20px;font-size:15px}
+.step{display:none}.step.show{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+/* step 0 */
+.pieces{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pieces{gap:12px}
+.pieces button{border:1px solid var(--line);background:transparent;border-radius:8px;cursor:pointer;font-size:16px;padding:0 0 10px;display:flex;flex-direction:column;align-items:stretch;gap:2px;overflow:hidden;text-align:center;transition:border-color .2s,box-shadow .2s}
+.pieces .ph{position:relative;aspect-ratio:4/4.6;background:linear-gradient(160deg,var(--blush),#fff);margin-bottom:8px;display:grid;place-items:center}
+.pieces .ph em{font-style:normal;font-size:22px;font-weight:500;color:var(--pinkInk);padding:0 8px;display:none}
+.pieces .ph.txt{aspect-ratio:4/3.2;margin-bottom:4px}.pieces .ph.txt em{display:block}
+.pieces .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pieces button small{font-size:12px;color:var(--mute);direction:ltr}
+.pieces button[aria-pressed=true]{border-color:var(--pink);box-shadow:0 0 0 2px var(--pink);font-weight:500}
+.pieces button[aria-pressed=true] small{color:var(--pinkInk)}
+.pieces button[aria-pressed=true] .ph::after{content:"✓";position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--pinkInk);color:#fff;display:grid;place-items:center;font-size:13px}
+.again{margin-top:26px;width:min(100%,320px);border:1px solid var(--line);border-radius:10px;padding:14px;background:#fff;font-size:14px}
+.again b{color:var(--pinkInk);direction:ltr;display:inline-block}
+.again button{margin-top:10px;min-height:44px;width:100%;border:1px solid var(--pink);background:transparent;color:var(--pinkInk);border-radius:2px;cursor:pointer;font-weight:500}
+.fbl{margin-top:18px;background:none;border:0;color:var(--mute);font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer;min-height:44px}
+.ref{display:flex;justify-content:space-between;margin-top:12px;font-size:11px;color:var(--mute)}
+.ref span:last-child{direction:ltr}
+.shot .head{text-align:center;font-size:13px;color:var(--pinkInk);margin-top:10px}
+/* feedback */
+.fb label{display:block;font-size:14px;margin:16px 0 6px}
+.fb select,.fb textarea,.fb input{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#fff;color:var(--ink);min-height:48px}
+.fb textarea{min-height:84px;resize:vertical}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.seg button{min-height:48px;border:1px solid var(--line);background:transparent;border-radius:6px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--blush);border-color:var(--pink);color:var(--pinkInk);font-weight:500}
+.thanks{text-align:center;padding:40px 0}.thanks h1{color:var(--pinkInk)}
+.load{color:var(--mute);font-size:14px;text-align:center;padding:30px 0}
+/* step 1 */
+.body1{display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;align-items:center}
+.fig svg{width:100%;height:230px;display:block}
+.ctl+.ctl{margin-top:22px}
+.ctl .t{font-size:13px;color:var(--mute)}
+.ctl .v{font-size:44px;font-weight:300;line-height:1.1;font-variant-numeric:tabular-nums}
+.ctl .v small{font-size:14px;color:var(--mute);margin-inline-start:4px}
+.row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.pm{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;font-size:20px;line-height:1;cursor:pointer;flex:none;touch-action:manipulation}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:var(--line);margin:0;direction:ltr;touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink);cursor:grab;box-shadow:0 0 0 5px var(--blush)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink)}
+.live{display:flex;justify-content:space-between;align-items:center;margin-top:26px;padding:14px 16px;background:var(--soft);border-radius:4px}
+.live .t{font-size:13px;color:var(--mute)}.live b{font-size:26px;font-weight:400;direction:ltr}
+/* step 2 */
+.area+.area{margin-top:18px}
+.area .t{font-size:14px;margin-bottom:8px}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.opts button{background:transparent;border:1px solid transparent;border-radius:4px;padding:10px 4px 8px;cursor:pointer;font-size:13px;color:var(--mute)}
+.opts button svg{display:block;margin:0 auto 6px;width:40px;height:40px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round}
+.opts button[aria-pressed=true]{background:var(--blush);color:var(--ink);border-color:var(--pink)}
+/* step 3 */
+.fits button{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:center;width:100%;text-align:start;background:transparent;border:1px solid transparent;border-radius:4px;padding:14px 12px;cursor:pointer}
+.fits button+button{margin-top:6px}
+.fits button[aria-pressed=true]{background:var(--blush);border-color:var(--pink)}
+.fits svg{width:44px;height:52px;fill:var(--ink)}
+.fits b{display:block;font-weight:500}.fits span{font-size:14px;color:var(--mute)}
+/* result */
+.shot{border:1px solid var(--line);border-radius:10px;padding:18px 16px 16px;background:linear-gradient(var(--blush),var(--paper) 45%)}
+.shot .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.shot .top b{color:var(--ink);font-weight:500;letter-spacing:.28em;direction:ltr}
+.ring{position:relative;width:160px;height:160px;margin:12px auto 0}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:1.5}
+.ring .bg{stroke:var(--line)}.ring .fg{stroke:var(--pink);stroke-width:3;transition:stroke-dashoffset .8s ease}
+.ring .sz{position:absolute;inset:0;display:grid;place-items:center;font-size:58px;font-weight:300;direction:ltr}
+.match{text-align:center;margin-top:10px;font-weight:500;font-size:15px}
+.conf{text-align:center;color:var(--mute);margin:0;font-size:14px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px;border-top:1px solid var(--line);padding-top:10px;text-align:center}
+.facts div{font-size:12px;color:var(--mute)}.facts b{display:block;color:var(--ink);font-weight:500;font-size:14px}
+.sizes{display:flex;justify-content:space-between;margin:20px 0 4px;direction:ltr;border-bottom:1px solid var(--line)}
+.sizes button{flex:1;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 0;min-height:44px;cursor:pointer;color:var(--mute);position:relative;font-size:14px}
+.sizes button.sel{color:var(--ink);border-color:var(--pink);font-weight:600}
+.sizes button.rec::before{content:"";position:absolute;top:2px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--rose)}
+.tap{text-align:center;font-size:13px;color:var(--mute);margin:6px 0 16px}
+.scale{display:grid;grid-template-columns:64px minmax(0,1fr);row-gap:16px;align-items:center}
+.scale .h{font-size:12px;color:var(--mute);display:flex;justify-content:space-between}
+.scale .n{font-size:14px}
+.track{position:relative;height:2px;background:var(--line)}
+.track::after{content:"";position:absolute;left:50%;top:-5px;width:1px;height:12px;background:var(--line)}
+.dot{position:absolute;top:-6px;width:14px;height:14px;margin-right:-7px;border-radius:50%;background:var(--pinkInk);transition:right .4s ease}
+.note{margin-top:18px;background:var(--soft);padding:12px 14px;border-radius:4px;font-size:14px}
+.note .t{font-size:12px;color:var(--mute)}
+.cam{text-align:center;font-size:14px;margin-top:16px}
+.fine{font-size:12px;color:var(--mute);margin-top:10px;text-align:center}
+footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var(--line);padding:12px 22px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.back{width:52px;min-height:52px;border:1px solid var(--line);background:transparent;border-radius:2px;cursor:pointer;font-size:20px;flex:none}
+.go{flex:1;min-height:52px;border:0;border-radius:2px;background:var(--ink);color:var(--paper);font-weight:500;font-size:16px;cursor:pointer}
+.go:disabled{opacity:.35;cursor:default}
+.go.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<section class="welcome" id="sw">
+  <div class="wl"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
+  <h1>أهلًا بكم في <em>أزورا</em></h1>
+  <p>عشان القطعة توصلك على مقاسك بالظبط، جاوبي على 4 أسئلة بسيطة وهنقولك مقاسك.</p>
+  <button class="go" id="start" type="button">يلا نعرف مقاسك</button>
+  <div class="again" id="again" hidden></div>
+  <div class="steps4"><span><b>1</b>القطعة</span><span><b>2</b>الطول والوزن</span><span><b>3</b>شكل الجسم</span><span><b>4</b>ستايلك</span></div>
+  <button class="fbl" id="fbl" type="button">استلمتي طلبك؟ قوليلنا المقاس كان مظبوط؟</button>
+</section>
+<header id="hd">
+  <div class="logo"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
+  <div class="kick">اعرفي مقاسك المظبوط</div>
+  <div class="prog" id="prog"><i></i><i></i><i></i><i></i></div>
+  <div class="stepno"><span id="pname"></span><span id="stepno">01 / 04</span></div>
+</header>
+
+<main id="mn">
+  <section class="step" id="s0">
+    <h1>هتشتري إيه؟</h1>
+    <p class="sub">كل قطعة ليها مقاسها. اختاري نوع القطعة الأول.</p>
+    <div class="pieces" id="pieces"><div class="load">لحظة واحدة...</div></div>
+  </section>
+
+  <section class="step" id="s1">
+    <h1>طولك ووزنك</h1>
+    <p class="sub">حركي المؤشر أو دوسي + و −</p>
+    <div class="body1">
+      <div class="fig"><svg id="fig" viewBox="0 0 80 230" aria-hidden="true"></svg></div>
+      <div>
+        <div class="ctl">
+          <div class="t">الطول</div>
+          <div class="v"><span id="hv">160</span><small>سم</small></div>
+          <div class="row"><button class="pm" type="button" data-k="h" data-d="1" aria-label="زودي الطول">+</button><input id="h" type="range" min="140" max="190" step="1" aria-label="الطول"><button class="pm" type="button" data-k="h" data-d="-1" aria-label="قللي الطول">−</button></div>
+        </div>
+        <div class="ctl">
+          <div class="t">الوزن</div>
+          <div class="v"><span id="wv">65</span><small>كجم</small></div>
+          <div class="row"><button class="pm" type="button" data-k="w" data-d="1" aria-label="زودي الوزن">+</button><input id="w" type="range" min="35" max="150" step="1" aria-label="الوزن"><button class="pm" type="button" data-k="w" data-d="-1" aria-label="قللي الوزن">−</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="live"><div><div>مقاس مبدئي</div><div class="t">هيتظبط أكتر في الخطوات الجاية</div></div><b id="est">M</b></div>
+  </section>
+
+  <section class="step" id="s2">
+    <h1>شكل جسمك</h1>
+    <p class="sub">الهدوم بتلبس على الجسم مش على الأرقام. مش متأكدة؟ سيبيها متوسط.</p>
+    <div id="areas"></div>
+  </section>
+
+  <section class="step" id="s3">
+    <h1>بتحبي القطعة تبقى إزاي؟</h1>
+    <p class="sub">هنختار المقاس على حسب ما بتحبي تلبسي.</p>
+    <div class="fits" id="fits"></div>
+  </section>
+
+  <section class="step" id="s4">
+    <div class="shot">
+      <div class="top"><span id="rpiece"></span><img src="logo.png" alt="أزورا" style="height:30px;width:auto" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'AZORA'}))"></div>
+      <div class="head">مقاسك المناسب</div>
+      <div class="ring">
+        <svg viewBox="0 0 160 160"><circle class="bg" cx="80" cy="80" r="76"/><circle class="fg" id="arc" cx="80" cy="80" r="76" stroke-dasharray="477.5" stroke-dashoffset="477.5"/></svg>
+        <div class="sz" id="rsz">M</div>
+      </div>
+      <div class="match" id="rmatch"></div>
+      <p class="conf" id="rconf"></p>
+      <div class="facts" id="facts"></div>
+      <div class="ref"><span>دليل مقاسات أزورا</span><span id="rref"></span></div>
+    </div>
+    <div class="sizes" id="sizes"></div>
+    <div class="tap">دوسي على أي مقاس تشوفي هيلبس عليكي إزاي</div>
+    <div class="scale" id="scale"></div>
+    <div class="note"><div class="t">ملاحظة على المقاس</div><div id="rnote"></div></div>
+    <p class="cam">خدي سكرين شوت للشاشة دي وابعتيها لنا مع طلبك.</p>
+    <p class="fine">ده ترشيح عام، واللبس ممكن يختلف شوية حسب الموديل والقماشة. لو محتارة كلمينا وهنساعدك.</p>
+  </section>
+  <section class="step fb" id="s5">
+    <div id="fbform">
+      <h1>المقاس كان مظبوط؟</h1>
+      <p class="sub">رأيك بيساعدنا نظبط المقاسات أكتر لكل عميلاتنا.</p>
+      <label for="fbp">القطعة اللي اشتريتيها</label><select id="fbp"></select>
+      <label for="fbs">المقاس اللي وصلك</label><select id="fbs"></select>
+      <label>لبست عليكي إزاي؟</label>
+      <div class="seg" id="fbfit"><button type="button" data-v="ضيقة">ضيقة</button><button type="button" data-v="مظبوطة">مظبوطة</button><button type="button" data-v="واسعة">واسعة</button></div>
+      <label for="fbn">حابة تقولي حاجة؟ (اختياري)</label><textarea id="fbn" placeholder="مثلاً: الكم كان طويل شوية"></textarea>
+      <label for="fbc">اسمك أو رقم الطلب (اختياري)</label><input id="fbc" type="text" autocomplete="name">
+    </div>
+    <div class="thanks" id="fbok" hidden><h1>شكرًا ليكي</h1><p class="sub">وصلنا رأيك، وهنستخدمه عشان كل قطعة توصلك على مقاسك بالظبط.</p></div>
+  </section>
+</main>
+
+<footer id="ft">
+  <button class="back" id="back" type="button" aria-label="رجوع" hidden>→</button>
+  <button class="go" id="next" type="button">التالي ←</button>
+</footer>
+</div>
+
+<script>
+{
+// ===================== الإعدادات =====================
+// رابط شيت القواعد على جوجل شيتس (اللي فيه تبويبين: "المقاسات" و "القطع").
+// لو فاضي أو الشيت مش متاح، الصفحة بتشتغل بالقواعد الاحتياطية اللي تحت.
+const SHEET_ID = '1Lag0AgMM4G018BO1nHmR5EzG9tY8067Mcc5TamkKVfo';
+// رابط Apps Script اللي بيسجل آراء العميلات في تبويب "الآراء" في نفس الشيت
+const FEEDBACK_URL = '';
+// قواعد احتياطية (تجريبية) بنفس شكل الشيت
+const FALLBACK = {
+  pieces: [
+    ['blouse','بلوزة','نعم','نعم','لا',0,1],
+    ['blazer','بليزر','نعم','نعم','لا',0,1],
+    ['dress','فستان','نعم','نعم','نعم',0,1],
+    ['pants','بنطلون','لا','نعم','نعم',0,1],
+    ['set','طقم قطعتين','نعم','نعم','نعم',0,1],
+    ['formal','فورمال','نعم','نعم','نعم',0,1]
+  ],
+  // [القطعة، المقاس، الوزن من، الوزن إلى، الطول من، الطول إلى]
+  sizes: (() => {
+    const S = ['S','M','L','XL','2XL','3XL'], W = [[35,52],[53,60],[61,68],[69,77],[78,88],[89,150]];
+    const shift = {blouse:0, blazer:-3, dress:-5, pants:0, set:-2, formal:-3};
+    const out = [];
+    for (const p in shift) S.forEach((s,i)=>out.push([p, s, i===0?35:W[i][0]+shift[p], i===S.length-1?150:W[i][1]+shift[p], '', '']));
+    return out;
+  })()
+};
+// =====================================================
+
+// لينك صورة من جوجل درايف بيتحول لرابط صورة مباشر
+const img = u => { const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*id=)([\w-]+)/); return m ? `https://lh3.googleusercontent.com/d/${m[1]}=w800` : u; };
+const AREAS = {
+  chest:  {name:'الصدر',   o:['أصغر','متوسط','أكبر'],   ic:['M15 10h10l-1 20h-8z','M12 10h16l-3 20h-10z','M9 10h22l-4 20h-14z']},
+  stomach:{name:'البطن',   o:['مسطحة','متوسطة','بارزة'], ic:['M15 8v24M25 8v24','M15 8v24M24 8q4 12 0 24','M15 8v24M23 8q10 12 0 24']},
+  hips:   {name:'الأرداف', o:['أضيق','متوسطة','أعرض'],   ic:['M16 8q-3 12 0 24M24 8q3 12 0 24','M15 8q-6 12 0 24M25 8q6 12 0 24','M14 8q-10 12 0 24M26 8q10 12 0 24']}
+};
+const FITS = [
+  {k:'slim',    n:'ضيق ومحدد',  d:'ماشي مع الجسم وبيبين التفاصيل.',      w:12},
+  {k:'regular', n:'مظبوط',      d:'زي ما القطعة متصممة بالظبط.',          w:18},
+  {k:'relaxed', n:'واسع ومريح', d:'براح في الحركة ومريح طول اليوم.',      w:26}
+];
+
+const $ = id => document.getElementById(id);
+const yes = v => /^(نعم|ايوه|أيوه|اه|آه|yes|y|1|true|✓)$/i.test(String(v).trim());
+const num = v => { const n = parseFloat(String(v).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))); return isNaN(n) ? null : n; };
+let PIECES = [], SIZES = {};
+
+function load(raw){
+  PIECES = raw.pieces.filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1])).map(r=>({
+    code:String(r[0]).trim().toLowerCase(), name:String(r[1]).trim(),
+    areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
+    slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim()
+  }));
+  SIZES = {};
+  raw.sizes.forEach(r=>{
+    const p = PIECES.find(x=>x.name===String(r[0]).trim() || x.code===String(r[0]).trim().toLowerCase());
+    if (!p || !String(r[1]).trim() || (num(r[2])==null && num(r[3])==null)) return;
+    (SIZES[p.code] ||= []).push({n:String(r[1]).trim(), w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])});
+  });
+  PIECES = PIECES.filter(p=>SIZES[p.code]?.length);
+  PIECES.forEach(p=>{ if(!p.areas.length) p.areas=['chest','stomach','hips']; });
+}
+function csv(t){
+  const rows=[]; let row=[], f='', q=false;
+  for (let i=0;i<t.length;i++){ const c=t[i];
+    if (q){ if(c==='"'){ if(t[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if (c==='"') q=true; else if (c===','){row.push(f);f='';} else if (c==='\n'){row.push(f);rows.push(row);row=[];f='';} else if (c!=='\r') f+=c;
+  }
+  if (f||row.length){row.push(f);rows.push(row);}
+  return rows;
+}
+async function fetchSheet(){
+  const u = n => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}`;
+  const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 7000);
+  const [a,b] = await Promise.all([u('القطع'),u('المقاسات')].map(x=>fetch(x,{signal:ctl.signal,cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.text();})));
+  clearTimeout(tm);
+  return {pieces:csv(a), sizes:csv(b)};
+}
+
+let st = {piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, fit:'regular', step:-1, sel:null, last:null};
+try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','shape','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); } catch(_){}
+const save = () => { try { localStorage.setItem('azora-size2', JSON.stringify(st)); } catch(_){} };
+const P = () => PIECES.find(p=>p.code===st.piece);
+const list = () => SIZES[st.piece] || [];
+
+// base size from the owner's rules: a row whose weight (and height, if set) range fits; else nearest by weight
+function baseIdx(){
+  const L = list(); let best = -1, bestD = 1e9;
+  L.forEach((s,i)=>{
+    const inH = (s.h0==null || st.h>=s.h0) && (s.h1==null || st.h<=s.h1);
+    const w0 = s.w0 ?? -1e9, w1 = s.w1 ?? 1e9;
+    const d = st.w < w0 ? w0 - st.w : st.w > w1 ? st.w - w1 : 0;
+    const dd = d + (inH ? 0 : 1000);
+    if (dd < bestD){ bestD = dd; best = i; }
+  });
+  return {i: Math.max(0,best), exact: bestD===0};
+}
+function rec(){
+  const p = P(), L = list(), b = baseIdx();
+  const ch = p.areas.map(a=>st.shape[a]-1);
+  let shapeShift = ch.some(c=>c>0) ? 1 : ch.every(c=>c<0) ? -1 : 0;
+  const fitShift = st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
+  const raw = b.i + shapeShift + fitShift;
+  const i = Math.max(0, Math.min(L.length-1, Math.round(raw)));
+  return {i, base:b.i, exact:b.exact, edge: raw > L.length-1 || raw < 0, fitShift};
+}
+
+// step 0
+function piecesHTML(){
+  const esc = t => t.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  return PIECES.map(p=>`<button type="button" data-p="${esc(p.code)}" aria-pressed="${st.piece===p.code}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(SIZES[p.code]||[]).map(s=>s.n).filter((_,i,a)=>i===0||i===a.length-1).join(' – ')}</small></button>`).join('');
+}
+$('pieces').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; render(); });
+
+// step 1
+document.querySelectorAll('.pm').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k, el=$(k); el.value=+el.value + +b.dataset.d; st[k]=+el.value; render(); }));
+$('h').addEventListener('input', e=>{ st.h=+e.target.value; render(); });
+$('w').addEventListener('input', e=>{ st.w=+e.target.value; render(); });
+function figure(){
+  const k = Math.max(0.72, Math.min(1.6, (st.w/((st.h/100)**2))/22));
+  const sc = 0.8 + (st.h-140)/50*0.2, cx=40, top=230-220*sc;
+  const y = t => (top + t*220*sc).toFixed(1), x = d => (d*k).toFixed(1);
+  $('fig').innerHTML = `<line x1="0" x2="80" y1="${top}" y2="${top}" stroke="currentColor" stroke-dasharray="2 3" opacity=".4"/>
+  <g fill="currentColor"><circle cx="${cx}" cy="${y(.07)}" r="${(11*sc).toFixed(1)}"/>
+  <path d="M${cx-x(13)} ${y(.15)} Q${cx} ${y(.13)} ${cx+ +x(13)} ${y(.15)} L${cx+ +x(15)} ${y(.3)} Q${cx+ +x(10)} ${y(.38)} ${cx+ +x(11)} ${y(.44)} Q${cx+ +x(19)} ${y(.55)} ${cx+ +x(14)} ${y(.62)} L${cx+ +x(9)} ${y(1)} L${cx+2} ${y(1)} L${cx} ${y(.66)} L${cx-2} ${y(1)} L${cx-x(9)} ${y(1)} L${cx-x(14)} ${y(.62)} Q${cx-x(19)} ${y(.55)} ${cx-x(11)} ${y(.44)} Q${cx-x(10)} ${y(.38)} ${cx-x(15)} ${y(.3)} Z"/></g>`;
+}
+
+// step 2
+function areasHTML(){
+  return P().areas.map(a=>`<div class="area"><div class="t">${AREAS[a].name}</div><div class="opts">${
+    AREAS[a].o.map((o,i)=>`<button type="button" data-a="${a}" data-i="${i}" aria-pressed="${st.shape[a]===i}"><svg viewBox="0 0 40 40"><path d="${AREAS[a].ic[i]}"/></svg>${o}</button>`).join('')}</div></div>`).join('');
+}
+$('areas').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.shape[b.dataset.a]=+b.dataset.i; render(); });
+
+// step 3
+function fitsHTML(){
+  return FITS.map(f=>`<button type="button" data-k="${f.k}" aria-pressed="${st.fit===f.k}"><svg viewBox="0 0 44 52"><path d="M${22-f.w/2} 4h${f.w}l${f.w/6} 44h-${f.w+f.w/3}z"/></svg><div><b>${f.n}</b><span>${f.d}</span></div></button>`).join('');
+}
+$('fits').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.fit=b.dataset.k; render(); });
+
+// result
+function result(){
+  const p = P(), L = list(), r = rec(), i = st.sel ?? r.i;
+  $('rpiece').textContent = p.name;
+  const today = new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
+  $('rref').textContent = today;
+  st.last = {piece:p.code, name:p.name, size:L[r.i].n};
+  $('rsz').textContent = L[i].n;
+  // how each area sits in size i: + roomy, − snug
+  const ds = p.areas.map(a=>({a, d: (i - r.base) - (st.shape[a]-1)}));
+  const want = r.fitShift;
+  const dev = ds.reduce((s,x)=>s+Math.abs(x.d - want),0)/ds.length;
+  let pct = Math.round(96 - dev*22 - (r.exact?0:12) - (r.edge && i===r.i ? 10 : 0));
+  pct = Math.max(45, Math.min(97, pct));
+  $('arc').style.strokeDashoffset = 477.5*(1-pct/100);
+  $('rmatch').textContent = `${pct}% تطابق`;
+  $('rconf').textContent = i===r.i ? (pct>=80 ? 'ترشيح واثق على حسب قياساتك.' : 'أقرب مقاس ليكي.') : `المقاس المرشح ليكي ${L[r.i].n}`;
+  $('facts').innerHTML = `<div>الطول<b>${st.h} سم</b></div><div>الوزن<b>${st.w} كجم</b></div><div>بتحبيها<b>${FITS.find(f=>f.k===st.fit).n}</b></div>`;
+  $('sizes').innerHTML = L.map((s,k)=>`<button type="button" data-i="${k}" class="${k===i?'sel':''} ${k===r.i?'rec':''}" aria-pressed="${k===i}">${s.n}</button>`).join('');
+  $('scale').innerHTML = '<div></div><div class="h"><span>ضيق</span><span>مظبوط</span><span>واسع</span></div>' +
+    ds.map(x=>`<div class="n">${AREAS[x.a].name}</div><div class="track"><span class="dot" style="right:${Math.max(4,Math.min(96,50+x.d*28))}%"></span></div>`).join('');
+  const tight = ds.filter(x=>x.d<0).map(x=>AREAS[x.a].name), loose = ds.filter(x=>x.d>0).map(x=>AREAS[x.a].name);
+  $('rnote').textContent =
+    !r.exact && i===r.i ? 'قياساتك برا الجدول المعتاد للقطعة دي. كلمينا قبل الطلب ونتأكد إنها هتريحك.'
+    : tight.length ? `المقاس ده هيبقى ضيق شوية في ${tight.join(' و')}.${i===r.i?'':' لو بتحبي براح خدي المرشح.'}`
+    : loose.length ? `المقاس ده هيبقى واسع في ${loose.join(' و')}${st.fit==='relaxed'&&i===r.i?'، زي ما بتحبي.':'.'}`
+    : 'القطعة هتلبس عليكي مظبوط زي ما هي متصممة.';
+}
+$('sizes').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.sel=+b.dataset.i; result(); });
+
+function render(){
+  if (!PIECES.length) return;
+  const w = st.step===-1; $('sw').hidden=!w; $('hd').hidden=w; $('mn').hidden=w; $('ft').hidden=w;
+  $('pieces').innerHTML = piecesHTML();
+  for (let k=0;k<=5;k++) $('s'+k).classList.toggle('show', st.step===k);
+  $('prog').hidden = $('stepno').parentNode.hidden = st.step===5;
+  const L0 = st.last && PIECES.find(p=>p.code===st.last.piece);
+  $('again').hidden = !L0;
+  if (L0) $('again').innerHTML = `أهلًا بيكي تاني! آخر مرة مقاسك في ${L0.name} كان <b>${st.last.size}</b><button type="button" id="seeLast">شوفي نتيجتك</button>`;
+  $('fbl').hidden = !FEEDBACK_URL;
+  [...$('prog').children].forEach((x,k)=>x.classList.toggle('on', k <= Math.min(st.step,3)));
+  $('stepno').textContent = st.step<4 ? `0${st.step+1} / 04` : 'النتيجة';
+  $('pname').textContent = st.step>0 && P() ? P().name : '';
+  $('back').hidden = false;
+  $('next').disabled = (st.step===0 && !P()) || (st.step===5 && (!fb.fit || fbSent));
+  $('next').classList.toggle('ghost', st.step===4);
+  $('next').textContent = st.step===3 ? 'اعرفي مقاسك ←' : st.step===4 ? 'جربي قطعة تانية' : st.step===5 ? (fbSent ? 'اتبعت ✓' : 'ابعتي رأيك') : 'التالي ←';
+  if (st.step===5) fbRender();
+  if (P()){
+    $('hv').textContent=st.h; $('wv').textContent=st.w; $('h').value=st.h; $('w').value=st.w;
+    figure();
+    $('est').textContent = list()[baseIdx().i].n;
+    $('areas').innerHTML = areasHTML();
+    $('fits').innerHTML = fitsHTML();
+    if (st.step===4) result();
+  }
+  save();
+}
+$('next').addEventListener('click', ()=>{
+  if (st.step===5) return fbSend();
+  if (st.step===4){ st.step=0; st.piece=null; hashPiece=false; }
+  else st.step=Math.min(4,st.step+1);
+  st.sel=null; render(); window.scrollTo(0,0);
+});
+$('back').addEventListener('click', ()=>{ st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : st.step-1; render(); window.scrollTo(0,0); });
+$('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
+$('fbl').addEventListener('click', ()=>{ st.step=5; render(); window.scrollTo(0,0); });
+
+// feedback
+const fb = {piece:null, size:null, fit:null}; let fbSent = false;
+function fbRender(){
+  if (!fb.piece) fb.piece = st.last?.piece || PIECES[0].code;
+  const sizes = SIZES[fb.piece] || [];
+  if (!fb.size || !sizes.some(s=>s.n===fb.size)) fb.size = (st.last?.piece===fb.piece && st.last.size) || sizes[0]?.n;
+  $('fbp').innerHTML = PIECES.map(p=>`<option value="${p.code}" ${p.code===fb.piece?'selected':''}>${p.name}</option>`).join('');
+  $('fbs').innerHTML = sizes.map(s=>`<option ${s.n===fb.size?'selected':''}>${s.n}</option>`).join('');
+  document.querySelectorAll('#fbfit button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.v===fb.fit));
+  $('fbform').hidden = fbSent; $('fbok').hidden = !fbSent;
+}
+$('fbp').addEventListener('change', e=>{ fb.piece=e.target.value; fb.size=null; render(); });
+$('fbs').addEventListener('change', e=>{ fb.size=e.target.value; });
+$('fbfit').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; fb.fit=b.dataset.v; render(); });
+async function fbSend(){
+  if (!fb.fit || fbSent) return;
+  const shape = Object.entries(st.shape).map(([a,i])=>`${AREAS[a].name}: ${AREAS[a].o[i]}`).join('، ');
+  const data = new URLSearchParams({piece: PIECES.find(p=>p.code===fb.piece)?.name||fb.piece, size: fb.size||'', result: fb.fit,
+    recommended: st.last?.piece===fb.piece ? st.last.size : '', height: st.h, weight: st.w, shape, style: FITS.find(f=>f.k===st.fit).n,
+    note: $('fbn').value.slice(0,500), contact: $('fbc').value.slice(0,100)});
+  $('next').disabled = true; $('next').textContent = 'بيتبعت...';
+  try { await fetch(FEEDBACK_URL, {method:'POST', mode:'no-cors', body:data}); fbSent = true; }
+  catch(_) { $('next').textContent = 'حصلت مشكلة، جربي تاني'; $('next').disabled = false; return; }
+  render();
+}
+$('start').addEventListener('click', ()=>{ st.step = hashPiece ? 1 : 0; render(); window.scrollTo(0,0); });
+let hashPiece = false;
+
+(async()=>{
+  let raw = FALLBACK;
+  if (SHEET_ID){ try { raw = await fetchSheet(); } catch(_) { raw = FALLBACK; } }
+  load(raw);
+  if (!PIECES.length) load(FALLBACK);
+  const h = location.hash.slice(1).toLowerCase();
+  if (PIECES.some(p=>p.code===h)){ st.piece=h; hashPiece=true; }
+  if (h==='feedback' && FEEDBACK_URL) st.step=5;
+  render();
+})();
+}
+</script>
+</body>
+</html>
