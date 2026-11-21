@@ -481,10 +481,12 @@ $('start').addEventListener('click', ()=>{ st.step = hashPiece ? 1 : 0; render()
 let hashPiece = false;
 
 (async()=>{
-  let raw = FALLBACK;
-  if (SHEET_ID){ try { raw = await fetchSheet(); } catch(_) { raw = FALLBACK; } }
+  let raw = FALLBACK, src = 'fallback';
+  if (SHEET_ID){ try { raw = await fetchSheet(); src = 'sheet'; } catch(_) { raw = FALLBACK; } }
   load(raw);
-  if (!PIECES.length) load(FALLBACK);
+  if (!PIECES.length){ load(FALLBACK); src = 'fallback'; }
+  if (location.hash==='#check'){ const d=document.createElement('p'); d.className='fine';
+    d.textContent = src==='sheet' ? `متصل بالشيت ✓ (${PIECES.length} قطع)` : 'مش قادر يقرا الشيت، شغال بالجدول الاحتياطي'; $('sw').appendChild(d); }
   const h = location.hash.slice(1).toLowerCase();
   if (PIECES.some(p=>p.code===h)){ st.piece=h; hashPiece=true; }
   if (h==='feedback' && FEEDBACK_URL) st.step=5;
