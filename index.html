@@ -490,6 +490,7 @@ let hashPiece = false;
   const h = location.hash.slice(1).toLowerCase();
   if (PIECES.some(p=>p.code===h)){ st.piece=h; hashPiece=true; }
   if (h==='feedback' && FEEDBACK_URL) st.step=5;
+  addEventListener('hashchange', ()=>location.reload());
   render();
 })();
 }
