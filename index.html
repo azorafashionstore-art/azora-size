@@ -310,7 +310,7 @@ const AREAS = {
 };
 const FITS = [
   {k:'slim',    n:'ضيق ومحدد',  d:'ماشي مع الجسم وبيبين التفاصيل.',      w:12},
-  {k:'regular', n:'مظبوط',      d:'زي ما القطعة متصممة بالظبط.',          w:18},
+  {k:'regular', n:'عادي',       d:'زي ما القطعة متصممة بالظبط.',          w:18},
   {k:'relaxed', n:'واسع ومريح', d:'براح في الحركة ومريح طول اليوم.',      w:26}
 ];
 
@@ -498,7 +498,7 @@ function render(){
   // كاجوال / ليدي counts as its own step when both lines are on
   const multi = LO.length > 1, total = multi ? 5 : 4;
   const pos = st.step===0 ? (multi && !pickLine ? 2 : 1) : Math.min(st.step,4) + 1 + (multi ? 1 : 0) - (st.step>=4 ? 1 : 0);
-  const labels = [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'ستايلك'];
+  const labels = [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'طريقة اللبس'];
   $('steps4').innerHTML = labels.map((t,k)=>`<span><b>${k+1}</b>${t}</span>`).join('');
   $('nq').textContent = total;
   $('prog').innerHTML = Array.from({length:total},(_,k)=>`<i class="${k < pos ? 'on' : ''}"></i>`).join('');
