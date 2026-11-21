@@ -457,10 +457,11 @@ function result(){
   const want = r.fitShift;
   const dev = ds.reduce((s,x)=>s+Math.abs(x.d - want),0)/ds.length;
   let pct = Math.round(96 - dev*22 - (r.exact?0:12) - (r.edge && i===r.i ? 10 : 0));
+  if (r.hid && i===r.i) pct = Math.min(pct, 65);
   pct = Math.max(45, Math.min(97, pct));
   $('arc').style.strokeDashoffset = 477.5*(1-pct/100);
   $('rmatch').textContent = `${pct}% تطابق`;
-  $('rconf').textContent = i===r.i ? (pct>=80 ? 'ترشيح واثق على حسب قياساتك.' : 'أقرب مقاس ليكي.') : `المقاس المرشح ليكي ${L[r.i].n}`;
+  $('rconf').textContent = i===r.i ? (r.hid ? 'أقرب مقاس متاح ليكي.' : pct>=80 ? 'ترشيح واثق على حسب قياساتك.' : 'أقرب مقاس ليكي.') : `المقاس المرشح ليكي ${L[r.i].n}`;
   $('facts').innerHTML = `<div>الطول<b>${st.h} سم</b></div><div>الوزن<b>${st.w} كجم</b></div><div>بتحبيها<b>${FITS.find(f=>f.k===st.fit).n}</b></div>`;
   $('sizes').innerHTML = L.map((s,k)=>`<button type="button" data-i="${k}" class="${k===i?'sel':''} ${k===r.i?'rec':''}" aria-pressed="${k===i}">${s.n}</button>`).join('');
   $('scale').innerHTML = '<div></div><div class="h"><span>ضيق</span><span>مظبوط</span><span>واسع</span></div>' +
