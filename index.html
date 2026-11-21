@@ -80,10 +80,14 @@ h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4
 .seg button{min-height:48px;border:1px solid var(--line);background:transparent;border-radius:6px;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--blush);border-color:var(--pink);color:var(--pinkInk);font-weight:500}
 .thanks{text-align:center;padding:40px 0}.thanks h1{color:var(--pinkInk)}
-.lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:-6px 0 16px}
-.lines button{min-height:64px;border:1px solid var(--line);border-radius:8px;background:transparent;cursor:pointer;padding:10px;display:flex;flex-direction:column;align-items:center;gap:2px}
-.lines b{font-weight:500;font-size:17px}.lines span{font-size:12px;color:var(--mute)}
-.lines button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}.lines button[aria-pressed=true] span{color:#f3d6df}
+.lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:8px}
+.lines button{aspect-ratio:4/5;border:1px solid var(--line);border-radius:10px;cursor:pointer;display:grid;place-items:center;position:relative;overflow:hidden;
+  background:linear-gradient(170deg,var(--blush),#fff 70%);transition:border-color .2s,transform .2s}
+.lines button::after{content:"";position:absolute;inset:10px;border:1px solid var(--pink);border-radius:6px;opacity:.35}
+.lines b{font-weight:400;font-size:clamp(24px,7vw,30px);color:var(--ink);letter-spacing:.02em}
+.lines button:hover,.lines button:focus-visible{border-color:var(--pink)}
+.lines button:active{transform:scale(.98)}
+.chg{background:none;border:0;padding:0;color:var(--pinkInk);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:15px;min-height:32px}
 .load{color:var(--mute);font-size:14px;text-align:center;padding:30px 0}
 /* step 1 */
 .body1{display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;align-items:center}
@@ -169,8 +173,8 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
 
 <main id="mn">
   <section class="step" id="s0">
-    <h1>هتشتري إيه؟</h1>
-    <p class="sub">كل قطعة ليها مقاسها. اختاري نوع القطعة الأول.</p>
+    <h1 id="s0t">هتشتري إيه؟</h1>
+    <p class="sub" id="s0s">كل قطعة ليها مقاسها. اختاري نوع القطعة الأول.</p>
     <div class="lines" id="lines" role="group" aria-label="خط المنتجات"></div>
     <div class="pieces" id="pieces"><div class="load">لحظة واحدة...</div></div>
   </section>
@@ -261,13 +265,13 @@ const FEEDBACK_ON = false;
 const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbwIara_FrBmRo74dzAAFEkn-E9_D3pQ4VQSqck6WvZGjVrRM9KbaX8iRrOe-U2Yok1q/exec';
 // خطوط المنتجات: كل خط ليه تبويب قطع وتبويب مقاسات في الشيت
 const LINES = [
-  {k:'casual', name:'كاجوال', d:'لبس يومي مريح', tabs:['قطع كاجوال','مقاسات كاجوال']},
-  {k:'lady',   name:'ليدي',   d:'أناقة للمناسبات والشغل', tabs:['قطع ليدي','مقاسات ليدي']}
+  {k:'casual', name:'كاجوال', tabs:['قطع كاجوال','مقاسات كاجوال']},
+  {k:'lady',   name:'ليدي',   tabs:['قطع ليدي','مقاسات ليدي']}
 ];
 // مقاسات أزورا الثابتة، من الأصغر للأكبر
-const SIZE_ORDER = ['L','XL','2XL','3XL'];
+const SIZE_ORDER = ['L','XL','2XL','3XL','4XL'];
 const normSize = v => { let t = String(v||'').trim().toUpperCase().replace(/\s+/g,'');
-  return ({'لارج':'L','LARGE':'L','اكسلارج':'XL','XXL':'2XL','2X':'2XL','XXXL':'3XL','3X':'3XL'})[t] || t; };
+  return ({'لارج':'L','LARGE':'L','اكسلارج':'XL','XXL':'2XL','2X':'2XL','XXXL':'3XL','3X':'3XL','XXXXL':'4XL','4X':'4XL'})[t] || t; };
 // قواعد احتياطية (تجريبية) بنفس شكل الشيت
 const FALLBACK1 = {
   pieces: [
@@ -281,7 +285,7 @@ const FALLBACK1 = {
   ],
   // [القطعة، المقاس، الوزن من، الوزن إلى، الطول من، الطول إلى]
   sizes: (() => {
-    const S = SIZE_ORDER, W = [[35,62],[63,72],[73,84],[85,150]];
+    const S = SIZE_ORDER, W = [[35,62],[63,72],[73,84],[85,96],[97,150]];
     const shift = {blouse:0, blazer:-3, dress:-4, pants:0, set:-2, suit:-3};
     const out = [];
     for (const p in shift) S.forEach((s,i)=>out.push([p, s, i===0?35:W[i][0]+shift[p], i===S.length-1?150:W[i][1]+shift[p], '', '']));
@@ -292,7 +296,7 @@ const FALLBACK = {casual: FALLBACK1, lady: (() => {
   const extra = [['twins','توينز'],['half-tunic','هاف تونيك'],['tunic-dress','فستان تونيك'],['tunic','تونيك']];
   const pieces = [...FALLBACK1.pieces, ...extra.map(([c,n])=>[c,n,'نعم','نعم','نعم',0,1,'',true])];
   const sizes = [...FALLBACK1.sizes];
-  extra.forEach(([c])=>SIZE_ORDER.forEach((s,i)=>sizes.push([c, s, [35,63,73,85][i], [62,72,84,150][i], '', ''])));
+  extra.forEach(([c])=>SIZE_ORDER.forEach((s,i)=>sizes.push([c, s, [35,63,73,85,97][i], [62,72,84,96,150][i], '', ''])));
   return {pieces, sizes};
 })()};
 // =====================================================
@@ -313,11 +317,11 @@ const FITS = [
 const $ = id => document.getElementById(id);
 const yes = v => /^(نعم|ايوه|أيوه|اه|آه|yes|y|1|true|✓)$/i.test(String(v).trim());
 const num = v => { const n = parseFloat(String(v).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))); return isNaN(n) ? null : n; };
-let PIECES = [], SIZES = {};
+let PIECES = [], SIZES = {}, HIDDEN = {};
 
 function load(raw){
   const off = v => /^(false|لا|0|no|مخفي|x)$/i.test(String(v??'').trim());
-  PIECES = []; SIZES = {};
+  PIECES = []; SIZES = {}; HIDDEN = {};
   const build = (L, d) => {
     const mine = (d.pieces||[]).filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>{
       const code = String(r[0]).trim().toLowerCase();
@@ -325,12 +329,18 @@ function load(raw){
         areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
         slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim()};
     });
+    // column H "ظاهر في الموقع": unchecking a normal-height row hides that size for the piece; unchecking a custom row drops just that row
+    const hidden = new Set();
     (d.sizes||[]).forEach(r=>{
       const p = mine.find(x=>x.name===String(r[0]).trim() || x.code===String(r[0]).trim().toLowerCase());
       const n = normSize(r[1]);
-      if (!p || !SIZE_ORDER.includes(n) || (num(r[2])==null && num(r[3])==null)) return;
+      if (!p || !SIZE_ORDER.includes(n)) return;
+      const custom = /مخصص/.test(String(r[6]||'')) || num(r[4])!=null || num(r[5])!=null;
+      if (off(r[7])){ if (!custom){ hidden.add(p.key+'|'+n); (HIDDEN[p.key] ||= []).push({n, w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])}); } return; }
+      if (num(r[2])==null && num(r[3])==null) return;
       (SIZES[p.key] ||= []).push({n, w0:num(r[2]), w1:num(r[3]), h0:num(r[4]), h1:num(r[5])});
     });
+    for (const k in SIZES) SIZES[k] = SIZES[k].filter(r=>!hidden.has(k+'|'+r.n));
     return mine.filter(p=>SIZES[p.key]?.length);
   };
   for (const L of LINES){
@@ -370,7 +380,9 @@ let st = {line:null, piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, 
 try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); if (s.shape) Object.assign(st.shape, s.shape); } catch(_){}
 const save = () => { try { localStorage.setItem('azora-size2', JSON.stringify(st)); } catch(_){} };
 const P = () => PIECES.find(p=>p.key===st.piece);
-const list = () => SIZE_ORDER.map(n=>({n}));
+// the sizes this piece offers: in Azora order, only sizes with a visible row
+const ladder = key => SIZE_ORDER.filter(n=>(SIZES[key]||[]).some(r=>r.n===n));
+const list = () => ladder(st.piece).map(n=>({n}));
 
 // base size from the owner's rules: a row whose weight (and height, if set) range fits; else nearest by weight
 // rows can repeat a weight range with different height ranges; the row matching both wins,
@@ -383,7 +395,9 @@ function baseIdx(){
     const c = dist(st.w, r.w0, r.w1) * 10 + dist(st.h, r.h0, r.h1) + (r.h0==null && r.h1==null ? 0.5 : 0);
     if (c < bestC){ bestC = c; best = r; }
   });
-  return {i: best ? SIZE_ORDER.indexOf(best.n) : 0, exact: bestC<1};
+  // her real size exists but is hidden right now
+  const hid = bestC>=1 ? (HIDDEN[st.piece]||[]).find(r=>dist(st.w, r.w0, r.w1)===0)?.n : null;
+  return {i: best ? ladder(st.piece).indexOf(best.n) : 0, exact: bestC<1, hid};
 }
 function rec(){
   const p = P(), L = list(), b = baseIdx();
@@ -392,15 +406,16 @@ function rec(){
   const fitShift = st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
   const raw = b.i + shapeShift + fitShift;
   const i = Math.max(0, Math.min(L.length-1, Math.round(raw)));
-  return {i, base:b.i, exact:b.exact, edge: raw > L.length-1 || raw < 0, fitShift};
+  return {i, base:b.i, exact:b.exact, hid:b.hid, edge: raw > L.length-1 || raw < 0, fitShift};
 }
 
 // step 0
 function piecesHTML(){
   const esc = t => t.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  return PIECES.filter(p=>p.line===st.line).map(p=>`<button type="button" data-p="${esc(p.key)}" aria-pressed="${st.piece===p.key}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(()=>{ const u = SIZE_ORDER.filter(n=>(SIZES[p.key]||[]).some(r=>r.n===n)); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
+  return PIECES.filter(p=>p.line===st.line).map(p=>`<button type="button" data-p="${esc(p.key)}" aria-pressed="${st.piece===p.key}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(()=>{ const u = ladder(p.key); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
 }
-$('lines').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.line=b.dataset.l; if (P()?.line!==st.line) st.piece=null; render(); });
+$('lines').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.line=b.dataset.l; st.lineChosen=true; if (P()?.line!==st.line) st.piece=null; render(); window.scrollTo(0,0); });
+$('s0s').addEventListener('click', e=>{ if(!e.target.closest('#chg')) return; st.lineChosen=false; render(); });
 $('pieces').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; render(); });
 
 // step 1
@@ -452,7 +467,9 @@ function result(){
     ds.map(x=>`<div class="n">${AREAS[x.a].name}</div><div class="track"><span class="dot" style="right:${Math.max(4,Math.min(96,50+x.d*28))}%"></span></div>`).join('');
   const tight = ds.filter(x=>x.d<0).map(x=>AREAS[x.a].name), loose = ds.filter(x=>x.d>0).map(x=>AREAS[x.a].name);
   $('rnote').textContent =
-    !r.exact && i===r.i ? 'قياساتك برا الجدول المعتاد للقطعة دي. كلمينا قبل الطلب ونتأكد إنها هتريحك.'
+    (r.edge && r.i===L.length-1 && i===r.i) ? 'ده أكبر مقاس متاح في القطعة دي، وممكن يبقى ضيق عليكي. كلمينا قبل الطلب ونشوف أنسب حل.'
+    : r.hid && i===r.i ? `مقاسك (${r.hid}) مش متاح في القطعة دي دلوقتي، وده أقرب مقاس ليكي. كلمينا لو محتارة.`
+    : !r.exact && i===r.i ? 'قياساتك برا الجدول المعتاد للقطعة دي. كلمينا قبل الطلب ونتأكد إنها هتريحك.'
     : tight.length ? `المقاس ده هيبقى ضيق شوية في ${tight.join(' و')}.${i===r.i?'':' لو بتحبي براح خدي المرشح.'}`
     : loose.length ? `المقاس ده هيبقى واسع في ${loose.join(' و')}${st.fit==='relaxed'&&i===r.i?'، زي ما بتحبي.':'.'}`
     : 'القطعة هتلبس عليكي مظبوط زي ما هي متصممة.';
@@ -464,8 +481,12 @@ function render(){
   const w = st.step===-1; $('sw').hidden=!w; $('hd').hidden=w; $('mn').hidden=w; $('ft').hidden=w;
   const LO = linesOn();
   if (!LO.some(L=>L.k===st.line)) st.line = LO[0]?.k;
-  $('lines').hidden = LO.length < 2;
-  $('lines').innerHTML = LO.map(L=>`<button type="button" data-l="${L.k}" aria-pressed="${st.line===L.k}"><b>${L.name}</b><span>${L.d}</span></button>`).join('');
+  // step 0 has two screens: first كاجوال / ليدي, then that line's pieces
+  const pickLine = LO.length > 1 && !st.lineChosen;
+  $('lines').hidden = !pickLine; $('pieces').hidden = pickLine;
+  $('lines').innerHTML = LO.map(L=>`<button type="button" data-l="${L.k}"><b>${L.name}</b></button>`).join('');
+  $('s0t').textContent = pickLine ? 'اختاري الستايل' : 'هتشتري إيه؟';
+  $('s0s').innerHTML = pickLine ? 'عشان نوريكي القطع المناسبة بس.' : LO.length > 1 ? `قطع ${lineName(st.line)}. <button type="button" class="chg" id="chg">غيّري</button>` : 'كل قطعة ليها مقاسها. اختاري نوع القطعة الأول.';
   $('pieces').innerHTML = piecesHTML();
   for (let k=0;k<=5;k++) $('s'+k).classList.toggle('show', st.step===k);
   $('prog').hidden = $('stepno').parentNode.hidden = st.step===5;
@@ -477,7 +498,7 @@ function render(){
   $('stepno').textContent = st.step<4 ? `0${st.step+1} / 04` : 'النتيجة';
   $('pname').textContent = st.step>0 && P() ? (LO.length>1 ? `${P().name} · ${lineName(P().line)}` : P().name) : '';
   $('back').hidden = false;
-  $('next').disabled = (st.step===0 && !P()) || (st.step===5 && (!fb.fit || fbSent));
+  $('next').disabled = (st.step===0 && (pickLine || !P())) || (st.step===5 && (!fb.fit || fbSent));
   $('next').classList.toggle('ghost', st.step===4);
   $('next').textContent = st.step===3 ? 'اعرفي مقاسك ←' : st.step===4 ? 'جربي قطعة تانية' : st.step===5 ? (fbSent ? 'اتبعت ✓' : 'ابعتي رأيك') : 'التالي ←';
   if (st.step===5) fbRender();
@@ -493,12 +514,14 @@ function render(){
 }
 $('next').addEventListener('click', ()=>{
   if (st.step===5) return fbSend();
-  if (st.step===4){ st.step=0; st.piece=null; hashPiece=false; }
+  if (st.step===4){ st.step=0; st.piece=null; st.lineChosen=false; hashPiece=false; }
   else st.step=Math.min(4,st.step+1);
   st.sel=null; render(); window.scrollTo(0,0);
 });
-$('back').addEventListener('click', ()=>{ st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : st.step-1; render(); window.scrollTo(0,0); });
-$('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.line=P()?.line||st.line; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
+$('back').addEventListener('click', ()=>{
+  if (st.step===0 && st.lineChosen && linesOn().length>1 && !hashLine){ st.lineChosen=false; render(); return; }
+  st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : st.step-1; render(); window.scrollTo(0,0); });
+$('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.line=P()?.line||st.line; st.lineChosen=true; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
 $('fbl').addEventListener('click', ()=>{ st.step=5; render(); window.scrollTo(0,0); });
 
 // feedback
@@ -527,7 +550,7 @@ async function fbSend(){
   render();
 }
 $('start').addEventListener('click', ()=>{ st.step = hashPiece ? 1 : 0; render(); window.scrollTo(0,0); });
-let hashPiece = false;
+let hashPiece = false, hashLine = false;
 
 (async()=>{
   let raw = FALLBACK, src = 'fallback';
@@ -539,8 +562,8 @@ let hashPiece = false;
   const h = location.hash.slice(1).toLowerCase();
   // links: #casual / #lady pick a line; #casual-blouse / #lady-dress pick a piece; old #blouse means casual
   const hk = PIECES.some(p=>p.key===h) ? h : PIECES.some(p=>p.key==='casual-'+h) ? 'casual-'+h : null;
-  if (hk){ st.piece=hk; st.line=P().line; hashPiece=true; }
-  else if (LINES.some(L=>L.k===h)) st.line=h;
+  if (hk){ st.piece=hk; st.line=P().line; st.lineChosen=true; hashPiece=true; }
+  else if (LINES.some(L=>L.k===h)){ st.line=h; st.lineChosen=true; hashLine=true; }
   if (h==='feedback' && FEEDBACK_ON && FEEDBACK_URL) st.step=5;
   addEventListener('hashchange', ()=>location.reload());
   render();
