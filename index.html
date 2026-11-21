@@ -158,16 +158,16 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
 <section class="welcome" id="sw">
   <div class="wl"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
   <h1>أهلًا بكم في <em>أزورا</em></h1>
-  <p>عشان القطعة توصلك على مقاسك بالظبط، جاوبي على 4 أسئلة بسيطة وهنقولك مقاسك.</p>
+  <p>عشان القطعة توصلك على مقاسك بالظبط، جاوبي على <span id="nq">5</span> أسئلة بسيطة وهنقولك مقاسك.</p>
   <button class="go" id="start" type="button">يلا نعرف مقاسك</button>
   <div class="again" id="again" hidden></div>
-  <div class="steps4"><span><b>1</b>القطعة</span><span><b>2</b>الطول والوزن</span><span><b>3</b>شكل الجسم</span><span><b>4</b>ستايلك</span></div>
+  <div class="steps4" id="steps4"></div>
   <button class="fbl" id="fbl" type="button">استلمتي طلبك؟ قوليلنا المقاس كان مظبوط؟</button>
 </section>
 <header id="hd">
   <div class="logo"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
   <div class="kick">اعرفي مقاسك المظبوط</div>
-  <div class="prog" id="prog"><i></i><i></i><i></i><i></i></div>
+  <div class="prog" id="prog"></div>
   <div class="stepno"><span id="pname"></span><span id="stepno">01 / 04</span></div>
 </header>
 
@@ -486,7 +486,7 @@ function render(){
   const pickLine = LO.length > 1 && !st.lineChosen;
   $('lines').hidden = !pickLine; $('pieces').hidden = pickLine;
   $('lines').innerHTML = LO.map(L=>`<button type="button" data-l="${L.k}"><b>${L.name}</b></button>`).join('');
-  $('s0t').textContent = pickLine ? 'اختاري الستايل' : 'هتشتري إيه؟';
+  $('s0t').textContent = pickLine ? 'كاجوال ولا ليدي؟' : 'هتشتري إيه؟';
   $('s0s').innerHTML = pickLine ? 'عشان نوريكي القطع المناسبة بس.' : LO.length > 1 ? `قطع ${lineName(st.line)}. <button type="button" class="chg" id="chg">غيّري</button>` : 'كل قطعة ليها مقاسها. اختاري نوع القطعة الأول.';
   $('pieces').innerHTML = piecesHTML();
   for (let k=0;k<=5;k++) $('s'+k).classList.toggle('show', st.step===k);
@@ -495,8 +495,14 @@ function render(){
   $('again').hidden = !L0;
   if (L0) $('again').innerHTML = `أهلًا بيكي تاني! آخر مرة مقاسك في ${L0.name} كان <b>${st.last.size}</b><button type="button" id="seeLast">شوفي نتيجتك</button>`;
   $('fbl').hidden = !(FEEDBACK_ON && FEEDBACK_URL);
-  [...$('prog').children].forEach((x,k)=>x.classList.toggle('on', k <= Math.min(st.step,3)));
-  $('stepno').textContent = st.step<4 ? `0${st.step+1} / 04` : 'النتيجة';
+  // كاجوال / ليدي counts as its own step when both lines are on
+  const multi = LO.length > 1, total = multi ? 5 : 4;
+  const pos = st.step===0 ? (multi && !pickLine ? 2 : 1) : Math.min(st.step,4) + 1 + (multi ? 1 : 0) - (st.step>=4 ? 1 : 0);
+  const labels = [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'ستايلك'];
+  $('steps4').innerHTML = labels.map((t,k)=>`<span><b>${k+1}</b>${t}</span>`).join('');
+  $('nq').textContent = total;
+  $('prog').innerHTML = Array.from({length:total},(_,k)=>`<i class="${k < pos ? 'on' : ''}"></i>`).join('');
+  $('stepno').textContent = st.step<4 ? `0${pos} / 0${total}` : 'النتيجة';
   $('pname').textContent = st.step>0 && P() ? (LO.length>1 ? `${P().name} · ${lineName(P().line)}` : P().name) : '';
   $('back').hidden = false;
   $('next').disabled = (st.step===0 && (pickLine || !P())) || (st.step===5 && (!fb.fit || fbSent));
