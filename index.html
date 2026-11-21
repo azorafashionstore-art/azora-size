@@ -261,17 +261,18 @@ const normSize = v => { let t = String(v||'').trim().toUpperCase().replace(/\s+/
 // قواعد احتياطية (تجريبية) بنفس شكل الشيت
 const FALLBACK = {
   pieces: [
-    ['blouse','بلوزة','نعم','نعم','لا',0,1],
-    ['blazer','بليزر','نعم','نعم','لا',0,1],
-    ['dress','فستان','نعم','نعم','نعم',0,1],
-    ['pants','بنطلون','لا','نعم','نعم',0,1],
-    ['set','طقم قطعتين','نعم','نعم','نعم',0,1],
-    ['formal','فورمال','نعم','نعم','نعم',0,1]
+    // [كود، اسم، صدر، بطن، أرداف، ضيق، واسع، صورة، ظاهر]
+    ['blouse','بلوزة','نعم','نعم','لا',0,1,'',true],
+    ['blazer','بليزر','نعم','نعم','لا',0,1,'',true],
+    ['dress','فستان','نعم','نعم','نعم',0,1,'',true],
+    ['pants','بنطلون','لا','نعم','نعم',0,1,'',true],
+    ['set','سوت','نعم','نعم','نعم',0,1,'',true],
+    ['suit','بدلة','نعم','نعم','نعم',0,1,'',true]
   ],
   // [القطعة، المقاس، الوزن من، الوزن إلى، الطول من، الطول إلى]
   sizes: (() => {
     const S = SIZE_ORDER, W = [[35,62],[63,72],[73,84],[85,150]];
-    const shift = {blouse:0, blazer:-3, dress:-4, pants:0, set:-2, formal:-3};
+    const shift = {blouse:0, blazer:-3, dress:-4, pants:0, set:-2, suit:-3};
     const out = [];
     for (const p in shift) S.forEach((s,i)=>out.push([p, s, i===0?35:W[i][0]+shift[p], i===S.length-1?150:W[i][1]+shift[p], '', '']));
     return out;
@@ -298,7 +299,8 @@ const num = v => { const n = parseFloat(String(v).replace(/[٠-٩]/g,d=>'٠١٢�
 let PIECES = [], SIZES = {};
 
 function load(raw){
-  PIECES = raw.pieces.filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1])).map(r=>({
+  const off = v => /^(false|لا|0|no|مخفي|x)$/i.test(String(v??'').trim());
+  PIECES = raw.pieces.filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>({
     code:String(r[0]).trim().toLowerCase(), name:String(r[1]).trim(),
     areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
     slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim()
@@ -343,10 +345,11 @@ function baseIdx(){
   const rows = SIZES[st.piece] || []; let best = null, bestC = 1e9;
   const dist = (v,a,b) => v < (a ?? -1e9) ? a - v : v > (b ?? 1e9) ? v - b : 0;
   rows.forEach(r=>{
-    const c = dist(st.w, r.w0, r.w1) * 10 + dist(st.h, r.h0, r.h1);
+    // a row with its own height range beats a row that leaves height empty
+    const c = dist(st.w, r.w0, r.w1) * 10 + dist(st.h, r.h0, r.h1) + (r.h0==null && r.h1==null ? 0.5 : 0);
     if (c < bestC){ bestC = c; best = r; }
   });
-  return {i: best ? SIZE_ORDER.indexOf(best.n) : 0, exact: bestC===0};
+  return {i: best ? SIZE_ORDER.indexOf(best.n) : 0, exact: bestC<1};
 }
 function rec(){
   const p = P(), L = list(), b = baseIdx();
