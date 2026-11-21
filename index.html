@@ -4,11 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<link rel="icon" href="logo.png">
-<meta property="og:image" content="logo.png">
-<title>مقاسك في أزورا</title>
-<meta property="og:title" content="اعرفي مقاسك في أزورا">
-<meta property="og:description" content="4 خطوات بسيطة وتعرفي مقاسك المظبوط في أي قطعة.">
+<title>أزورا | اعرفي مقاسك</title>
+<meta name="description" content="جاوبي على 5 أسئلة بسيطة وتعرفي مقاسك المناسب في أي قطعة من أزورا.">
+<link rel="canonical" href="https://azorafashionstore-art.github.io/azora-size/">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="أزورا Azora">
+<meta property="og:locale" content="ar_EG">
+<meta property="og:url" content="https://azorafashionstore-art.github.io/azora-size/">
+<meta property="og:title" content="أزورا | اعرفي مقاسك">
+<meta property="og:description" content="جاوبي على 5 أسئلة بسيطة وتعرفي مقاسك المناسب في أي قطعة من أزورا.">
+<meta property="og:image" content="https://azorafashionstore-art.github.io/azora-size/og.jpg">
+<meta property="og:image:secure_url" content="https://azorafashionstore-art.github.io/azora-size/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="أزورا: اعرفي مقاسك">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="أزورا | اعرفي مقاسك">
+<meta name="twitter:description" content="جاوبي على 5 أسئلة بسيطة وتعرفي مقاسك المناسب في أي قطعة من أزورا.">
+<meta name="twitter:image" content="https://azorafashionstore-art.github.io/azora-size/og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap">
 <style>
@@ -64,7 +80,7 @@ h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4
 .pieces button small{font-size:12px;color:var(--mute);direction:ltr}
 .pieces button[aria-pressed=true]{border-color:var(--pink);box-shadow:0 0 0 2px var(--pink);font-weight:500}
 .pieces button[aria-pressed=true] small{color:var(--pinkInk)}
-.pieces button[aria-pressed=true] .ph::after{content:"✓";position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--pinkInk);color:#fff;display:grid;place-items:center;font-size:13px}
+.pieces button[aria-pressed=true] .ph::after{content:"✓";position:absolute;top:8px;inset-inline-start:8px;width:24px;height:24px;border-radius:50%;background:var(--pinkInk);color:#fff;display:grid;place-items:center;font-size:13px}
 .again{margin-top:26px;width:min(100%,320px);border:1px solid var(--line);border-radius:10px;padding:14px;background:#fff;font-size:14px}
 .again b{color:var(--pinkInk);direction:ltr;display:inline-block}
 .again button{margin-top:10px;min-height:44px;width:100%;border:1px solid var(--pink);background:transparent;color:var(--pinkInk);border-radius:2px;cursor:pointer;font-weight:500}
@@ -88,6 +104,8 @@ h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4
 .lines button:hover,.lines button:focus-visible{border-color:var(--pink)}
 .lines button:active{transform:scale(.98)}
 .chg{background:none;border:0;padding:0;color:var(--pinkInk);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:15px;min-height:32px}
+.langbtn{position:fixed;top:calc(12px + env(safe-area-inset-top));inset-inline-end:max(12px,calc(50vw - 248px));z-index:20;min-width:44px;height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.92);color:var(--pinkInk);font:600 13px/1 "IBM Plex Sans Arabic",sans-serif;cursor:pointer;letter-spacing:.04em}
+.langbtn:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
 .load{color:var(--mute);font-size:14px;text-align:center;padding:30px 0}
 /* step 1 */
 .body1{display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;align-items:center}
@@ -139,7 +157,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .scale .n{font-size:14px}
 .track{position:relative;height:2px;background:var(--line)}
 .track::after{content:"";position:absolute;left:50%;top:-5px;width:1px;height:12px;background:var(--line)}
-.dot{position:absolute;top:-6px;width:14px;height:14px;margin-right:-7px;border-radius:50%;background:var(--pinkInk);transition:right .4s ease}
+.dot{position:absolute;top:-6px;width:14px;height:14px;margin-inline-start:-7px;border-radius:50%;background:var(--pinkInk);transition:right .4s ease}
 .note{margin-top:18px;background:var(--soft);padding:12px 14px;border-radius:4px;font-size:14px}
 .note .t{font-size:12px;color:var(--mute)}
 .cam{text-align:center;font-size:14px;margin-top:16px}
@@ -154,19 +172,20 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
 </style>
 </head>
 <body>
+<button class="langbtn" id="langbtn" type="button" aria-label="English">EN</button>
 <div class="app">
 <section class="welcome" id="sw">
   <div class="wl"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
-  <h1>أهلًا بكم في <em>أزورا</em></h1>
-  <p>عشان القطعة توصلك على مقاسك بالظبط، جاوبي على <span id="nq">5</span> أسئلة بسيطة وهنقولك مقاسك.</p>
-  <button class="go" id="start" type="button">يلا نعرف مقاسك</button>
+  <h1 data-t="w1">أهلًا بكم في <em>أزورا</em></h1>
+  <p data-t="w2">عشان القطعة توصلك على مقاسك بالظبط، جاوبي على <span id="nq">5</span> أسئلة بسيطة وهنقولك مقاسك.</p>
+  <button class="go" id="start" type="button" data-t="w3">يلا نعرف مقاسك</button>
   <div class="again" id="again" hidden></div>
   <div class="steps4" id="steps4"></div>
   <button class="fbl" id="fbl" type="button">استلمتي طلبك؟ قوليلنا المقاس كان مظبوط؟</button>
 </section>
 <header id="hd">
   <div class="logo"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
-  <div class="kick">اعرفي مقاسك المظبوط</div>
+  <div class="kick" data-t="k">اعرفي مقاسك المظبوط</div>
   <div class="prog" id="prog"></div>
   <div class="stepno"><span id="pname"></span><span id="stepno">01 / 04</span></div>
 </header>
@@ -180,42 +199,42 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
   </section>
 
   <section class="step" id="s1">
-    <h1>طولك ووزنك</h1>
-    <p class="sub">حركي المؤشر أو دوسي + و −</p>
+    <h1 data-t="s1a">طولك ووزنك</h1>
+    <p class="sub" data-t="s1b">حركي المؤشر أو دوسي + و −</p>
     <div class="body1">
       <div class="fig"><svg id="fig" viewBox="0 0 80 230" aria-hidden="true"></svg></div>
       <div>
         <div class="ctl">
-          <div class="t">الطول</div>
-          <div class="v"><span id="hv">160</span><small>سم</small></div>
+          <div class="t" data-t="hh">الطول</div>
+          <div class="v"><span id="hv">160</span><small data-t="cm">سم</small></div>
           <div class="row"><button class="pm" type="button" data-k="h" data-d="1" aria-label="زودي الطول">+</button><input id="h" type="range" min="140" max="190" step="1" aria-label="الطول"><button class="pm" type="button" data-k="h" data-d="-1" aria-label="قللي الطول">−</button></div>
         </div>
         <div class="ctl">
-          <div class="t">الوزن</div>
-          <div class="v"><span id="wv">65</span><small>كجم</small></div>
+          <div class="t" data-t="ww">الوزن</div>
+          <div class="v"><span id="wv">65</span><small data-t="kg">كجم</small></div>
           <div class="row"><button class="pm" type="button" data-k="w" data-d="1" aria-label="زودي الوزن">+</button><input id="w" type="range" min="35" max="150" step="1" aria-label="الوزن"><button class="pm" type="button" data-k="w" data-d="-1" aria-label="قللي الوزن">−</button></div>
         </div>
       </div>
     </div>
-    <div class="live"><div><div>مقاس مبدئي</div><div class="t">هيتظبط أكتر في الخطوات الجاية</div></div><b id="est">M</b></div>
+    <div class="live"><div><div data-t="e1">مقاس مبدئي</div><div class="t" data-t="e2">هيتظبط أكتر في الخطوات الجاية</div></div><b id="est">M</b></div>
   </section>
 
   <section class="step" id="s2">
-    <h1>شكل جسمك</h1>
-    <p class="sub">الهدوم بتلبس على الجسم مش على الأرقام. مش متأكدة؟ سيبيها متوسط.</p>
+    <h1 data-t="s2a">شكل جسمك</h1>
+    <p class="sub" data-t="s2b">الهدوم بتلبس على الجسم مش على الأرقام. مش متأكدة؟ سيبيها متوسط.</p>
     <div id="areas"></div>
   </section>
 
   <section class="step" id="s3">
-    <h1>بتحبي القطعة تبقى إزاي؟</h1>
-    <p class="sub">هنختار المقاس على حسب ما بتحبي تلبسي.</p>
+    <h1 data-t="s3a">بتحبي القطعة تبقى إزاي؟</h1>
+    <p class="sub" data-t="s3b">هنختار المقاس على حسب ما بتحبي تلبسي.</p>
     <div class="fits" id="fits"></div>
   </section>
 
   <section class="step" id="s4">
     <div class="shot">
       <div class="top"><span id="rpiece"></span><img src="logo.png" alt="أزورا" style="height:30px;width:auto" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'AZORA'}))"></div>
-      <div class="head">مقاسك المناسب</div>
+      <div class="head" data-t="r1">مقاسك المناسب</div>
       <div class="ring">
         <svg viewBox="0 0 160 160"><circle class="bg" cx="80" cy="80" r="76"/><circle class="fg" id="arc" cx="80" cy="80" r="76" stroke-dasharray="477.5" stroke-dashoffset="477.5"/></svg>
         <div class="sz" id="rsz">M</div>
@@ -223,14 +242,14 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
       <div class="match" id="rmatch"></div>
       <p class="conf" id="rconf"></p>
       <div class="facts" id="facts"></div>
-      <div class="ref"><span>دليل مقاسات أزورا</span><span id="rref"></span></div>
+      <div class="ref"><span data-t="r2">دليل مقاسات أزورا</span><span id="rref"></span></div>
     </div>
     <div class="sizes" id="sizes"></div>
-    <div class="tap">دوسي على أي مقاس تشوفي هيلبس عليكي إزاي</div>
+    <div class="tap" data-t="r3">دوسي على أي مقاس تشوفي هيلبس عليكي إزاي</div>
     <div class="scale" id="scale"></div>
-    <div class="note"><div class="t">ملاحظة على المقاس</div><div id="rnote"></div></div>
-    <p class="cam">خدي سكرين شوت للشاشة دي وابعتيها لنا مع طلبك.</p>
-    <p class="fine">ده ترشيح عام، واللبس ممكن يختلف شوية حسب الموديل والقماشة. لو محتارة كلمينا وهنساعدك.</p>
+    <div class="note"><div class="t" data-t="r4">ملاحظة على المقاس</div><div id="rnote"></div></div>
+    <p class="cam" data-t="r5">خدي سكرين شوت للشاشة دي وابعتيها لنا مع طلبك.</p>
+    <p class="fine" data-t="r6">ده ترشيح عام، واللبس ممكن يختلف شوية حسب الموديل والقماشة. لو محتارة كلمينا وهنساعدك.</p>
   </section>
   <section class="step fb" id="s5">
     <div id="fbform">
@@ -265,8 +284,8 @@ const FEEDBACK_ON = false;
 const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbwIara_FrBmRo74dzAAFEkn-E9_D3pQ4VQSqck6WvZGjVrRM9KbaX8iRrOe-U2Yok1q/exec';
 // خطوط المنتجات: كل خط ليه تبويب قطع وتبويب مقاسات في الشيت
 const LINES = [
-  {k:'casual', name:'كاجوال', tabs:['قطع كاجوال','مقاسات كاجوال']},
-  {k:'lady',   name:'ليدي',   tabs:['قطع ليدي','مقاسات ليدي']}
+  {k:'casual', name:'كاجوال', en:'Casual', tabs:['قطع كاجوال','مقاسات كاجوال']},
+  {k:'lady',   name:'ليدي',   en:'Lady', tabs:['قطع ليدي','مقاسات ليدي']}
 ];
 // مقاسات أزورا الثابتة، من الأصغر للأكبر
 const SIZE_ORDER = ['L','XL','2XL','3XL','4XL'];
@@ -301,17 +320,42 @@ const FALLBACK = {casual: FALLBACK1, lady: (() => {
 })()};
 // =====================================================
 
+// ===== اللغة =====
+let lang = 'ar';
+try { lang = new URLSearchParams(location.search).get('lang') || localStorage.getItem('azora-lang') || 'ar'; } catch(_){}
+if (lang!=='en') lang = 'ar';
+const L = (a, e) => lang==='en' ? e : a;
+const EN = {
+  w1:'Welcome to <em>Azora</em>', w2:'Answer <span id="nq">5</span> quick questions and we’ll tell you the size that fits you best.',
+  w3:'Find my size', k:'Find your perfect size', s1a:'Your height & weight', s1b:'Drag the slider or tap + and −',
+  hh:'Height', ww:'Weight', cm:'cm', kg:'kg', e1:'First estimate', e2:'We’ll refine it in the next steps',
+  s2a:'Your body shape', s2b:'Clothes fit bodies, not numbers. Not sure? Leave it at average.',
+  s3a:'How do you like it to fit?', s3b:'We’ll pick the size around the way you wear it.',
+  r1:'Your best size', r2:'Azora size guide', r3:'Tap any size to see how it would fit',
+  r4:'Fit note', r5:'Take a screenshot of this screen and send it to us with your order.',
+  r6:'This is a general recommendation. Fit can vary a little by style and fabric. Not sure? Message us and we’ll help.'
+};
+const PIECE_EN = {blouse:'Blouse', blazer:'Blazer', dress:'Dress', pants:'Pants', set:'Set', suit:'Suit', twins:'Twins', 'half-tunic':'Half Tunic', 'tunic-dress':'Tunic Dress', tunic:'Tunic'};
+const pn = p => lang==='en' ? (p.en || PIECE_EN[p.code] || p.name) : p.name;
+function applyLang(){
+  document.documentElement.lang = lang; document.documentElement.dir = lang==='en' ? 'ltr' : 'rtl';
+  document.title = L('أزورا | اعرفي مقاسك', 'Azora | Find your size');
+  document.querySelectorAll('[data-t]').forEach(el=>{ if (el._ar==null) el._ar = el.innerHTML; el.innerHTML = lang==='en' ? (EN[el.dataset.t] ?? el._ar) : el._ar; });
+  $('langbtn').textContent = lang==='en' ? 'ع' : 'EN';
+  $('langbtn').setAttribute('aria-label', lang==='en' ? 'العربية' : 'English');
+}
 // لينك صورة من جوجل درايف بيتحول لرابط صورة مباشر
 const img = u => { const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*id=)([\w-]+)/); return m ? `https://lh3.googleusercontent.com/d/${m[1]}=w800` : u; };
 const AREAS = {
-  chest:  {name:'الصدر',   o:['أصغر','متوسط','أكبر'],   ic:['M15 10h10l-1 20h-8z','M12 10h16l-3 20h-10z','M9 10h22l-4 20h-14z']},
-  stomach:{name:'البطن',   o:['مسطحة','متوسطة','بارزة'], ic:['M15 8v24M25 8v24','M15 8v24M24 8q4 12 0 24','M15 8v24M23 8q10 12 0 24']},
-  hips:   {name:'الأرداف', o:['أضيق','متوسطة','أعرض'],   ic:['M16 8q-3 12 0 24M24 8q3 12 0 24','M15 8q-6 12 0 24M25 8q6 12 0 24','M14 8q-10 12 0 24M26 8q10 12 0 24']}
+  chest:  {name:'الصدر', en:'Chest', oe:['Smaller','Average','Fuller'],   o:['أصغر','متوسط','أكبر'],   ic:['M15 10h10l-1 20h-8z','M12 10h16l-3 20h-10z','M9 10h22l-4 20h-14z']},
+  stomach:{name:'البطن', en:'Stomach', oe:['Flatter','Average','Rounder'],   o:['مسطحة','متوسطة','بارزة'], ic:['M15 8v24M25 8v24','M15 8v24M24 8q4 12 0 24','M15 8v24M23 8q10 12 0 24']},
+  hips:   {name:'الأرداف', en:'Hips', oe:['Narrower','Average','Fuller'], o:['أضيق','متوسطة','أعرض'],   ic:['M16 8q-3 12 0 24M24 8q3 12 0 24','M15 8q-6 12 0 24M25 8q6 12 0 24','M14 8q-10 12 0 24M26 8q10 12 0 24']}
 };
+const an = a => lang==='en' ? AREAS[a].en : AREAS[a].name;
 const FITS = [
-  {k:'slim',    n:'ضيق ومحدد',  d:'ماشي مع الجسم وبيبين التفاصيل.',      w:12},
-  {k:'regular', n:'عادي',       d:'زي ما القطعة متصممة بالظبط.',          w:18},
-  {k:'relaxed', n:'واسع ومريح', d:'براح في الحركة ومريح طول اليوم.',      w:26}
+  {k:'slim',    n:'ضيق ومحدد',  d:'ماشي مع الجسم وبيبين التفاصيل.',      ne:'Fitted',  de:'Follows the body. Sharp and tailored.', w:12},
+  {k:'regular', n:'عادي',       d:'زي ما القطعة متصممة بالظبط.',          ne:'Regular', de:'The fit the piece was designed for.',  w:18},
+  {k:'relaxed', n:'واسع ومريح', d:'براح في الحركة ومريح طول اليوم.',      ne:'Relaxed', de:'Room to move, comfortable all day.',    w:26}
 ];
 
 const $ = id => document.getElementById(id);
@@ -327,7 +371,7 @@ function load(raw){
       const code = String(r[0]).trim().toLowerCase();
       return {key:`${L.k}-${code}`, code, line:L.k, name:String(r[1]).trim(),
         areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
-        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim()};
+        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim(), en:String(r[9]||'').trim()};
     });
     // column H "ظاهر في الموقع": unchecking a normal-height row hides that size for the piece; unchecking a custom row drops just that row
     const hidden = new Set();
@@ -352,7 +396,7 @@ function load(raw){
   PIECES.forEach(p=>{ if(!p.areas.length) p.areas=['chest','stomach','hips']; });
 }
 const linesOn = () => LINES.filter(L=>PIECES.some(p=>p.line===L.k));
-const lineName = k => LINES.find(L=>L.k===k)?.name || '';
+const lineName = k => { const x = LINES.find(z=>z.k===k); return x ? (lang==='en' ? x.en : x.name) : ''; };
 function csv(t){
   const rows=[]; let row=[], f='', q=false;
   for (let i=0;i<t.length;i++){ const c=t[i];
@@ -412,7 +456,7 @@ function rec(){
 // step 0
 function piecesHTML(){
   const esc = t => t.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  return PIECES.filter(p=>p.line===st.line).map(p=>`<button type="button" data-p="${esc(p.key)}" aria-pressed="${st.piece===p.key}"><span class="ph ${p.img?'':'txt'}"><em>${esc(p.name)}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(p.name):''}<small>${(()=>{ const u = ladder(p.key); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
+  return PIECES.filter(p=>p.line===st.line).map(p=>`<button type="button" data-p="${esc(p.key)}" aria-pressed="${st.piece===p.key}"><span class="ph ${p.img?'':'txt'}"><em>${esc(pn(p))}</em>${p.img?`<img src="${esc(img(p.img))}" alt="" loading="lazy" onerror="this.parentNode.classList.add('txt');this.remove()">`:''}</span>${p.img?esc(pn(p)):''}<small>${(()=>{ const u = ladder(p.key); return u.length>1 ? u[0]+' – '+u[u.length-1] : u[0]||''; })()}</small></button>`).join('');
 }
 $('lines').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.line=b.dataset.l; st.lineChosen=true; if (P()?.line!==st.line) st.piece=null; render(); window.scrollTo(0,0); });
 $('s0s').addEventListener('click', e=>{ if(!e.target.closest('#chg')) return; st.lineChosen=false; render(); });
@@ -433,22 +477,22 @@ function figure(){
 
 // step 2
 function areasHTML(){
-  return P().areas.map(a=>`<div class="area"><div class="t">${AREAS[a].name}</div><div class="opts">${
-    AREAS[a].o.map((o,i)=>`<button type="button" data-a="${a}" data-i="${i}" aria-pressed="${st.shape[a]===i}"><svg viewBox="0 0 40 40"><path d="${AREAS[a].ic[i]}"/></svg>${o}</button>`).join('')}</div></div>`).join('');
+  return P().areas.map(a=>`<div class="area"><div class="t">${an(a)}</div><div class="opts">${
+    AREAS[a].o.map((o,i)=>`<button type="button" data-a="${a}" data-i="${i}" aria-pressed="${st.shape[a]===i}"><svg viewBox="0 0 40 40"><path d="${AREAS[a].ic[i]}"/></svg>${L(o, AREAS[a].oe[i])}</button>`).join('')}</div></div>`).join('');
 }
 $('areas').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.shape[b.dataset.a]=+b.dataset.i; render(); });
 
 // step 3
 function fitsHTML(){
-  return FITS.map(f=>`<button type="button" data-k="${f.k}" aria-pressed="${st.fit===f.k}"><svg viewBox="0 0 44 52"><path d="M${22-f.w/2} 4h${f.w}l${f.w/6} 44h-${f.w+f.w/3}z"/></svg><div><b>${f.n}</b><span>${f.d}</span></div></button>`).join('');
+  return FITS.map(f=>`<button type="button" data-k="${f.k}" aria-pressed="${st.fit===f.k}"><svg viewBox="0 0 44 52"><path d="M${22-f.w/2} 4h${f.w}l${f.w/6} 44h-${f.w+f.w/3}z"/></svg><div><b>${L(f.n,f.ne)}</b><span>${L(f.d,f.de)}</span></div></button>`).join('');
 }
 $('fits').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.fit=b.dataset.k; render(); });
 
 // result
 function result(){
   const p = P(), L = list(), r = rec(), i = st.sel ?? r.i;
-  $('rpiece').textContent = linesOn().length>1 ? `${p.name} · ${lineName(p.line)}` : p.name;
-  const today = new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
+  $('rpiece').textContent = linesOn().length>1 ? `${pn(p)} · ${lineName(p.line)}` : pn(p);
+  const today = new Date().toLocaleDateString(lang==='en'?'en-GB':'ar-EG',{day:'numeric',month:'long',year:'numeric'});
   $('rref').textContent = today;
   st.last = {piece:p.key, name:p.name, size:L[r.i].n};
   $('rsz').textContent = L[i].n;
@@ -460,20 +504,22 @@ function result(){
   if (r.hid && i===r.i) pct = Math.min(pct, 65);
   pct = Math.max(45, Math.min(97, pct));
   $('arc').style.strokeDashoffset = 477.5*(1-pct/100);
-  $('rmatch').textContent = `${pct}% تطابق`;
-  $('rconf').textContent = i===r.i ? (r.hid ? 'أقرب مقاس متاح ليكي.' : pct>=80 ? 'ترشيح واثق على حسب قياساتك.' : 'أقرب مقاس ليكي.') : `المقاس المرشح ليكي ${L[r.i].n}`;
-  $('facts').innerHTML = `<div>الطول<b>${st.h} سم</b></div><div>الوزن<b>${st.w} كجم</b></div><div>بتحبيها<b>${FITS.find(f=>f.k===st.fit).n}</b></div>`;
+  const T = (a,e) => lang==='en' ? e : a, fit = FITS.find(f=>f.k===st.fit);
+  $('rmatch').textContent = T(`${pct}% تطابق`, `${pct}% fit match`);
+  $('rconf').textContent = i===r.i ? (r.hid ? T('أقرب مقاس متاح ليكي.','The closest size available for you.') : pct>=80 ? T('ترشيح واثق على حسب قياساتك.','A confident match for your measurements.') : T('أقرب مقاس ليكي.','The closest size for you.')) : T(`المقاس المرشح ليكي ${L[r.i].n}`, `Your recommended size is ${L[r.i].n}`);
+  $('facts').innerHTML = `<div>${T('الطول','Height')}<b>${st.h} ${T('سم','cm')}</b></div><div>${T('الوزن','Weight')}<b>${st.w} ${T('كجم','kg')}</b></div><div>${T('بتحبيها','Fit')}<b>${T(fit.n, fit.ne)}</b></div>`;
   $('sizes').innerHTML = L.map((s,k)=>`<button type="button" data-i="${k}" class="${k===i?'sel':''} ${k===r.i?'rec':''}" aria-pressed="${k===i}">${s.n}</button>`).join('');
-  $('scale').innerHTML = '<div></div><div class="h"><span>ضيق</span><span>مظبوط</span><span>واسع</span></div>' +
-    ds.map(x=>`<div class="n">${AREAS[x.a].name}</div><div class="track"><span class="dot" style="right:${Math.max(4,Math.min(96,50+x.d*28))}%"></span></div>`).join('');
-  const tight = ds.filter(x=>x.d<0).map(x=>AREAS[x.a].name), loose = ds.filter(x=>x.d>0).map(x=>AREAS[x.a].name);
+  $('scale').innerHTML = `<div></div><div class="h"><span>${T('ضيق','Snug')}</span><span>${T('مظبوط','Ideal')}</span><span>${T('واسع','Roomy')}</span></div>` +
+    ds.map(x=>`<div class="n">${an(x.a)}</div><div class="track"><span class="dot" style="inset-inline-start:${Math.max(4,Math.min(96,50+x.d*28))}%"></span></div>`).join('');
+  const tight = ds.filter(x=>x.d<0).map(x=>an(x.a)), loose = ds.filter(x=>x.d>0).map(x=>an(x.a));
+  const and = T(' و',' and ');
   $('rnote').textContent =
-    (r.edge && r.i===L.length-1 && i===r.i) ? 'ده أكبر مقاس متاح في القطعة دي، وممكن يبقى ضيق عليكي. كلمينا قبل الطلب ونشوف أنسب حل.'
-    : r.hid && i===r.i ? `مقاسك (${r.hid}) مش متاح في القطعة دي دلوقتي، وده أقرب مقاس ليكي. كلمينا لو محتارة.`
-    : !r.exact && i===r.i ? 'قياساتك برا الجدول المعتاد للقطعة دي. كلمينا قبل الطلب ونتأكد إنها هتريحك.'
-    : tight.length ? `المقاس ده هيبقى ضيق شوية في ${tight.join(' و')}.${i===r.i?'':' لو بتحبي براح خدي المرشح.'}`
-    : loose.length ? `المقاس ده هيبقى واسع في ${loose.join(' و')}${st.fit==='relaxed'&&i===r.i?'، زي ما بتحبي.':'.'}`
-    : 'القطعة هتلبس عليكي مظبوط زي ما هي متصممة.';
+    (r.edge && r.i===L.length-1 && i===r.i) ? T('ده أكبر مقاس متاح في القطعة دي، وممكن يبقى ضيق عليكي. كلمينا قبل الطلب ونشوف أنسب حل.','This is the largest size available in this piece and it may feel tight. Message us before ordering and we’ll find the best option.')
+    : r.hid && i===r.i ? T(`مقاسك (${r.hid}) مش متاح في القطعة دي دلوقتي، وده أقرب مقاس ليكي. كلمينا لو محتارة.`, `Your size (${r.hid}) isn’t available in this piece right now, so this is the closest one. Message us if you’re unsure.`)
+    : !r.exact && i===r.i ? T('قياساتك برا الجدول المعتاد للقطعة دي. كلمينا قبل الطلب ونتأكد إنها هتريحك.','Your measurements are outside the usual range for this piece. Message us before ordering so we can make sure it fits.')
+    : tight.length ? T(`المقاس ده هيبقى ضيق شوية في ${tight.join(and)}.${i===r.i?'':' لو بتحبي براح خدي المرشح.'}`, `This size will be a little snug at the ${tight.join(and).toLowerCase()}.${i===r.i?'':' If you like room, take the recommended size.'}`)
+    : loose.length ? T(`المقاس ده هيبقى واسع في ${loose.join(and)}${st.fit==='relaxed'&&i===r.i?'، زي ما بتحبي.':'.'}`, `This size will be roomy at the ${loose.join(and).toLowerCase()}${st.fit==='relaxed'&&i===r.i?', just how you like it.':'.'}`)
+    : T('القطعة هتلبس عليكي مظبوط زي ما هي متصممة.','This piece will fit you just as it was designed.');
 }
 $('sizes').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.sel=+b.dataset.i; result(); });
 
@@ -485,29 +531,30 @@ function render(){
   // step 0 has two screens: first كاجوال / ليدي, then that line's pieces
   const pickLine = LO.length > 1 && !st.lineChosen;
   $('lines').hidden = !pickLine; $('pieces').hidden = pickLine;
-  $('lines').innerHTML = LO.map(L=>`<button type="button" data-l="${L.k}"><b>${L.name}</b></button>`).join('');
-  $('s0t').textContent = pickLine ? 'كاجوال ولا ليدي؟' : 'هتشتري إيه؟';
-  $('s0s').textContent = 'اختاري القطعة اللي محتاجة تعرفي مقاسك فيها.'; $('s0s').hidden = pickLine;
+  $('lines').innerHTML = LO.map(x=>`<button type="button" data-l="${x.k}"><b>${lineName(x.k)}</b></button>`).join('');
+  $('s0t').textContent = pickLine ? L('كاجوال ولا ليدي؟','Casual or Lady?') : L('هتشتري إيه؟','What are you buying?');
+  $('s0s').textContent = L('اختاري القطعة اللي محتاجة تعرفي مقاسك فيها.','Choose the piece you want to find your size in.'); $('s0s').hidden = pickLine;
   $('pieces').innerHTML = piecesHTML();
   for (let k=0;k<=5;k++) $('s'+k).classList.toggle('show', st.step===k);
   $('prog').hidden = $('stepno').parentNode.hidden = st.step===5;
   const L0 = st.last && PIECES.find(p=>p.key===st.last.piece);
   $('again').hidden = !L0;
-  if (L0) $('again').innerHTML = `أهلًا بيكي تاني! آخر مرة مقاسك في ${L0.name} كان <b>${st.last.size}</b><button type="button" id="seeLast">شوفي نتيجتك</button>`;
+  if (L0) $('again').innerHTML = L(`أهلًا بيكي تاني! آخر مرة مقاسك في ${pn(L0)} كان <b>${st.last.size}</b><button type="button" id="seeLast">شوفي نتيجتك</button>`, `Welcome back! Last time your ${pn(L0).toLowerCase()} size was <b>${st.last.size}</b><button type="button" id="seeLast">See my result</button>`);
   $('fbl').hidden = !(FEEDBACK_ON && FEEDBACK_URL);
   // كاجوال / ليدي counts as its own step when both lines are on
   const multi = LO.length > 1, total = multi ? 5 : 4;
   const pos = st.step===0 ? (multi && !pickLine ? 2 : 1) : Math.min(st.step,4) + 1 + (multi ? 1 : 0) - (st.step>=4 ? 1 : 0);
-  const labels = [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'طريقة اللبس'];
+  const labels = lang==='en' ? [...(multi ? ['Casual / Lady'] : []), 'Piece', 'Height & weight', 'Body shape', 'Fit'] : [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'طريقة اللبس'];
   $('steps4').innerHTML = labels.map((t,k)=>`<span><b>${k+1}</b>${t}</span>`).join('');
   $('nq').textContent = total;
   $('prog').innerHTML = Array.from({length:total},(_,k)=>`<i class="${k < pos ? 'on' : ''}"></i>`).join('');
-  $('stepno').textContent = st.step<4 ? `0${pos} / 0${total}` : 'النتيجة';
-  $('pname').textContent = st.step>0 && P() ? (LO.length>1 ? `${P().name} · ${lineName(P().line)}` : P().name) : '';
+  $('stepno').textContent = st.step<4 ? `0${pos} / 0${total}` : L('النتيجة','Result');
+  $('pname').textContent = st.step>0 && P() ? (LO.length>1 ? `${pn(P())} · ${lineName(P().line)}` : pn(P())) : '';
   $('back').hidden = false;
   $('next').disabled = (st.step===0 && (pickLine || !P())) || (st.step===5 && (!fb.fit || fbSent));
   $('next').classList.toggle('ghost', st.step===4);
-  $('next').textContent = st.step===3 ? 'اعرفي مقاسك ←' : st.step===4 ? 'جربي قطعة تانية' : st.step===5 ? (fbSent ? 'اتبعت ✓' : 'ابعتي رأيك') : 'التالي ←';
+  $('next').textContent = st.step===3 ? L('اعرفي مقاسك ←','Find my size →') : st.step===4 ? L('جربي قطعة تانية','Try another piece') : st.step===5 ? (fbSent ? 'اتبعت ✓' : 'ابعتي رأيك') : L('التالي ←','Next →');
+  $('back').textContent = L('→','←'); $('back').setAttribute('aria-label', L('رجوع','Back'));
   if (st.step===5) fbRender();
   if (P()){
     $('hv').textContent=st.h; $('wv').textContent=st.w; $('h').value=st.h; $('w').value=st.w;
@@ -556,9 +603,15 @@ async function fbSend(){
   catch(_) { $('next').textContent = 'حصلت مشكلة، جربي تاني'; $('next').disabled = false; return; }
   render();
 }
+$('langbtn').addEventListener('click', ()=>{
+  lang = lang==='en' ? 'ar' : 'en';
+  try { localStorage.setItem('azora-lang', lang); } catch(_){}
+  applyLang(); render();
+});
 $('start').addEventListener('click', ()=>{ st.step = hashPiece ? 1 : 0; render(); window.scrollTo(0,0); });
 let hashPiece = false, hashLine = false;
 
+applyLang();
 (async()=>{
   let raw = FALLBACK, src = 'fallback';
   if (SHEET_ID){ try { raw = await fetchSheet(); src = 'sheet'; } catch(_) { raw = FALLBACK; } }
