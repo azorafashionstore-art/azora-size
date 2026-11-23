@@ -167,12 +167,27 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
 .go{flex:1;min-height:52px;border:0;border-radius:2px;background:var(--ink);color:var(--paper);font-weight:500;font-size:16px;cursor:pointer}
 .go:disabled{opacity:.35;cursor:default}
 .go.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.wa{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));inset-inline-start:max(14px,calc(50vw - 246px));z-index:20;width:52px;height:52px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.18);text-decoration:none}
+.wa svg,.wab svg{width:28px;height:28px;fill:#fff}
+.wa.home{bottom:calc(20px + env(safe-area-inset-bottom))}
+.wab{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 0;min-height:52px;border-radius:2px;background:#25d366;color:#fff;font-weight:500;font-size:16px;text-decoration:none}
+.wab svg{width:22px;height:22px}
+.sorry{text-align:center;padding:26px 6px 6px}
+.sorry .ic{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;background:var(--blush);display:grid;place-items:center;color:var(--pinkInk);font-size:26px}
+.sorry h1{margin:0 0 12px}
+.sorry p{color:var(--mute);margin:0 auto 10px;max-width:24em;font-size:15px}
+.sorry p b{color:var(--ink);font-weight:500}
+.sorry .alt{margin-top:24px;text-align:start}
+.sorry .alt .t{font-size:13px;color:var(--mute);margin-bottom:8px;text-align:center}
+.sorry .alt div{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.sorry .alt button{min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;font:inherit;font-size:14px;color:var(--ink)}
 [hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <button class="langbtn" id="langbtn" type="button" aria-label="English">EN</button>
+<a class="wa" id="wa" href="#" target="_blank" rel="noopener" aria-label="كلمينا على واتساب" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.36A9.9 9.9 0 1 0 12.04 2zm0 18.1a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.1.81.83-3.02-.2-.31a8.2 8.2 0 1 1 6.95 3.84zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42h-.48a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07s.89 2.4 1.01 2.57c.12.16 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.6.19 1.13.16 1.56.1.47-.07 1.46-.6 1.67-1.18.2-.58.2-1.07.14-1.18-.06-.1-.22-.16-.47-.29z"/></svg></a>
 <div class="app">
 <section class="welcome" id="sw">
   <div class="wl"><img src="logo.png" alt="أزورا" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'AZORA'}))"></div>
@@ -232,6 +247,15 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
   </section>
 
   <section class="step" id="s4">
+    <div class="sorry" id="sorry" hidden>
+      <div class="ic">🤍</div>
+      <h1 id="sorryh"></h1>
+      <p id="sorry1"></p>
+      <p id="sorry2"></p>
+      <a class="wab" id="wab2" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.36A9.9 9.9 0 1 0 12.04 2zm0 18.1a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.1.81.83-3.02-.2-.31a8.2 8.2 0 1 1 6.95 3.84zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42h-.48a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07s.89 2.4 1.01 2.57c.12.16 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.6.19 1.13.16 1.56.1.47-.07 1.46-.6 1.67-1.18.2-.58.2-1.07.14-1.18-.06-.1-.22-.16-.47-.29z"/></svg><span id="wab2t"></span></a>
+      <div class="alt" id="alt"></div>
+    </div>
+    <div id="res">
     <div class="shot">
       <div class="top"><span id="rpiece"></span><img src="logo.png" alt="أزورا" style="height:30px;width:auto" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'AZORA'}))"></div>
       <div class="head" data-t="r1">مقاسك المناسب</div>
@@ -249,7 +273,9 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
     <div class="scale" id="scale"></div>
     <div class="note"><div class="t" data-t="r4">ملاحظة على المقاس</div><div id="rnote"></div></div>
     <p class="cam" data-t="r5">خدي سكرين شوت للشاشة دي وابعتيها لنا مع طلبك.</p>
+    <a class="wab" id="wab" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.36A9.9 9.9 0 1 0 12.04 2zm0 18.1a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.1.81.83-3.02-.2-.31a8.2 8.2 0 1 1 6.95 3.84zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42h-.48a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07s.89 2.4 1.01 2.57c.12.16 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.6.19 1.13.16 1.56.1.47-.07 1.46-.6 1.67-1.18.2-.58.2-1.07.14-1.18-.06-.1-.22-.16-.47-.29z"/></svg><span id="wabt">ابعتي السكرين على واتساب</span></a>
     <p class="fine" data-t="r6">ده ترشيح عام، واللبس ممكن يختلف شوية حسب الموديل والقماشة. لو محتارة كلمينا وهنساعدك.</p>
+    </div>
   </section>
   <section class="step fb" id="s5">
     <div id="fbform">
@@ -282,6 +308,8 @@ const SHEET_ID = '1Lag0AgMM4G018BO1nHmR5EzG9tY8067Mcc5TamkKVfo';
 const FEEDBACK_ON = false;
 // رابط Apps Script اللي بيسجل آراء العميلات في تبويب "الآراء" في نفس الشيت
 const FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbwIara_FrBmRo74dzAAFEkn-E9_D3pQ4VQSqck6WvZGjVrRM9KbaX8iRrOe-U2Yok1q/exec';
+// رقم واتساب أزورا (احتياطي). الرقم الأساسي بيتقري من تبويب "إعدادات" في الشيت: سطر "رقم الواتساب".
+let WHATSAPP = '01061086227';
 // خطوط المنتجات: كل خط ليه تبويب قطع وتبويب مقاسات في الشيت
 const LINES = [
   {k:'casual', name:'كاجوال', en:'Casual', tabs:['قطع كاجوال','مقاسات كاجوال']},
@@ -367,11 +395,15 @@ function load(raw){
   const off = v => /^(false|لا|0|no|مخفي|x)$/i.test(String(v??'').trim());
   PIECES = []; SIZES = {}; HIDDEN = {};
   const build = (L, d) => {
+    // optional columns are found by their header, so their order in the sheet doesn't matter
+    const hd = (d.pieces||[]).find(r=>/اسم القطعة/.test(r.join(' '))) || [];
+    const col = re => hd.findIndex(h=>re.test(String(h)));
+    const cMax = col(/أقصى وزن|اقصى وزن|أقصي وزن|اقصي وزن/), cEn = col(/(بالإنجليزي|بالانجليزي|english)/i) >= 0 && !/كود/.test(hd[col(/(بالإنجليزي|بالانجليزي|english)/i)]) ? col(/(بالإنجليزي|بالانجليزي|english)/i) : (hd.length ? -1 : 9);
     const mine = (d.pieces||[]).filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>{
       const code = String(r[0]).trim().toLowerCase();
       return {key:`${L.k}-${code}`, code, line:L.k, name:String(r[1]).trim(),
         areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
-        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim(), en:String(r[9]||'').trim()};
+        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim(), en:cEn>=0 ? String(r[cEn]||'').trim() : '', max:cMax>=0 && num(r[cMax])>0 ? num(r[cMax]) : null};
     });
     // column H "ظاهر في الموقع": unchecking a normal-height row hides that size for the piece; unchecking a custom row drops just that row
     const hidden = new Set();
@@ -395,6 +427,12 @@ function load(raw){
   }
   PIECES.forEach(p=>{ if(!p.areas.length) p.areas=['chest','stomach','hips']; });
 }
+// 01xxxxxxxxx (أو 1xxxxxxxxx لو الشيت شال الصفر) => 201xxxxxxxxx
+const waNum = v => { let d = String(v||'').replace(/[٠-٩]/g,x=>'٠١٢٣٤٥٦٧٨٩'.indexOf(x)).replace(/\D/g,'');
+  if (/^00/.test(d)) d = d.slice(2); if (/^01\d{9}$/.test(d)) d = '2'+d; else if (/^1\d{9}$/.test(d)) d = '20'+d; return d.length>=11 ? d : ''; };
+const waLink = t => `https://wa.me/${waNum(WHATSAPP)}?text=${encodeURIComponent(t)}`;
+const al = n => /^ال/.test(n) ? n : 'ال'+n;
+const over = () => { const p = P(); return !!(p && p.max && st.w > p.max); };
 const linesOn = () => LINES.filter(L=>PIECES.some(p=>p.line===L.k));
 const lineName = k => { const x = LINES.find(z=>z.k===k); return x ? (lang==='en' ? x.en : x.name) : ''; };
 function csv(t){
@@ -410,13 +448,16 @@ async function fetchSheet(){
   const u = n => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}`;
   const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 8000);
   const get = n => fetch(u(n),{signal:ctl.signal,cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.text();}).then(csv).catch(()=>null);
-  const names = [...LINES.flatMap(L=>L.tabs), 'القطع', 'المقاسات'];
+  const names = [...LINES.flatMap(L=>L.tabs), 'القطع', 'المقاسات', 'إعدادات'];
   const got = await Promise.all(names.map(get)); clearTimeout(tm);
   const by = Object.fromEntries(names.map((n,i)=>[n,got[i]]));
   if (got.every(x=>x==null)) throw 0;
   const raw = {};
   LINES.forEach(L=>{ raw[L.k] = {pieces:by[L.tabs[0]]||[], sizes:by[L.tabs[1]]||[]}; });
   raw.legacy = {pieces:by['القطع']||[], sizes:by['المقاسات']||[]};
+  // إعدادات: سطر "رقم الواتساب" والرقم جنبه
+  const wr = (by['إعدادات']||[]).find(r=>/^\s*رقم\s*(ال)?واتس/.test(r[0]||'') && waNum(r[1]));
+  if (wr) WHATSAPP = String(wr[1]);
   return raw;
 }
 
@@ -489,12 +530,32 @@ function fitsHTML(){
 $('fits').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.fit=b.dataset.k; render(); });
 
 // result
+// her weight is above the piece's "أقصى وزن": no size, a gentle note instead
+function sorry(){
+  const p = P(), T = (a,e) => lang==='en' ? e : a, nm = pn(p), an_ = al(p.name), ln = linesOn().length>1 ? ` (${lineName(p.line)})` : '';
+  const esc = t => String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  $('sorryh').textContent = T('حابين نكون صريحين معاكي','We’d rather be honest with you');
+  $('sorry1').innerHTML = T(`أكبر مقاس عندنا في <b>${esc(an_)}</b> معمول لحد <b>${p.max} كجم</b>، فمقاساتنا الحالية مش هتلبس عليكي بالراحة اللي تستاهليها.`,
+    `Our largest <b>${esc(nm.toLowerCase())}</b> size is made for up to <b>${p.max} kg</b>, so our current sizes wouldn’t fit you as comfortably as you deserve.`);
+  $('sorry2').textContent = T('ومش هنرشحلك مقاس وخلاص. كلمينا على واتساب وهنساعدك تلاقي اللي يناسبك.','Rather than just suggest a size, message us on WhatsApp and we’ll help you find what suits you.');
+  $('wab2t').textContent = T('كلمينا على واتساب','Chat with us on WhatsApp');
+  $('wab2').hidden = !waNum(WHATSAPP);
+  $('wab2').href = waLink(T(`أهلًا أزورا 🤍 كنت عايزة ${an_}${ln} ووزني ${st.w} كجم، ممكن تساعدوني ألاقي مقاسي؟`, `Hi Azora 🤍 I wanted the ${nm.toLowerCase()}${ln} and I weigh ${st.w} kg. Can you help me find my size?`));
+  const alt = PIECES.filter(x=>x.line===p.line && x.key!==p.key && !(x.max && st.w > x.max));
+  $('alt').innerHTML = alt.length ? `<div class="t">${T('قطع تانية ممكن تناسبك','Other pieces that may suit you')}</div><div>${alt.map(x=>`<button type="button" data-p="${esc(x.key)}">${esc(pn(x))}</button>`).join('')}</div>` : '';
+}
+$('alt').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; st.step=2; render(); window.scrollTo(0,0); });
 function result(){
-  const p = P(), L = list(), r = rec(), i = st.sel ?? r.i;
+  const no = over(); $('sorry').hidden = !no; $('res').hidden = no;
+  if (no) return sorry();
+  const p = P(), L = list(), r = rec(), i = st.sel ?? r.i, T = (a,e) => lang==='en' ? e : a;
   $('rpiece').textContent = linesOn().length>1 ? `${pn(p)} · ${lineName(p.line)}` : pn(p);
   const today = new Date().toLocaleDateString(lang==='en'?'en-GB':'ar-EG',{day:'numeric',month:'long',year:'numeric'});
   $('rref').textContent = today;
   st.last = {piece:p.key, name:p.name, size:L[r.i].n};
+  $('wab').hidden = !waNum(WHATSAPP);
+  $('wabt').textContent = T('ابعتي السكرين على واتساب','Send the screenshot on WhatsApp');
+  $('wab').href = waLink(T(`أهلًا أزورا 🤍 مقاسي في ${al(p.name)}${linesOn().length>1?` (${lineName(p.line)})`:''} طلع ${L[i].n}. هبعتلكم السكرين شوت دلوقتي.`, `Hi Azora 🤍 My size in the ${pn(p).toLowerCase()}${linesOn().length>1?` (${lineName(p.line)})`:''} is ${L[i].n}. Sending you the screenshot now.`));
   $('rsz').textContent = L[i].n;
   // how each area sits in size i: + roomy, − snug
   const ds = p.areas.map(a=>({a, d: (i - r.base) - (st.shape[a]-1)}));
@@ -504,7 +565,7 @@ function result(){
   if (r.hid && i===r.i) pct = Math.min(pct, 65);
   pct = Math.max(45, Math.min(97, pct));
   $('arc').style.strokeDashoffset = 477.5*(1-pct/100);
-  const T = (a,e) => lang==='en' ? e : a, fit = FITS.find(f=>f.k===st.fit);
+  const fit = FITS.find(f=>f.k===st.fit);
   $('rmatch').textContent = T(`${pct}% تطابق`, `${pct}% fit match`);
   $('rconf').textContent = i===r.i ? (r.hid ? T('أقرب مقاس متاح ليكي.','The closest size available for you.') : pct>=80 ? T('ترشيح واثق على حسب قياساتك.','A confident match for your measurements.') : T('أقرب مقاس ليكي.','The closest size for you.')) : T(`المقاس المرشح ليكي ${L[r.i].n}`, `Your recommended size is ${L[r.i].n}`);
   $('facts').innerHTML = `<div>${T('الطول','Height')}<b>${st.h} ${T('سم','cm')}</b></div><div>${T('الوزن','Weight')}<b>${st.w} ${T('كجم','kg')}</b></div><div>${T('بتحبيها','Fit')}<b>${T(fit.n, fit.ne)}</b></div>`;
@@ -559,22 +620,27 @@ function render(){
   if (P()){
     $('hv').textContent=st.h; $('wv').textContent=st.w; $('h').value=st.h; $('w').value=st.w;
     figure();
-    $('est').textContent = list()[baseIdx().i].n;
+    $('est').textContent = over() ? '—' : list()[baseIdx().i].n;
     $('areas').innerHTML = areasHTML();
     $('fits').innerHTML = fitsHTML();
     if (st.step===4) result();
   }
+  // زرار واتساب الثابت
+  const wn = waNum(WHATSAPP); $('wa').hidden = !wn || st.step===5;
+  $('wa').classList.toggle('home', w);
+  $('wa').href = waLink(L('أهلًا أزورا 🤍 عندي سؤال عن المقاسات','Hi Azora 🤍 I have a question about sizes'));
+  $('wa').setAttribute('aria-label', L('كلمينا على واتساب','Chat with us on WhatsApp'));
   save();
 }
 $('next').addEventListener('click', ()=>{
   if (st.step===5) return fbSend();
   if (st.step===4){ st.step=0; st.piece=null; st.lineChosen=false; hashPiece=false; }
-  else st.step=Math.min(4,st.step+1);
+  else st.step = (st.step===1 && over()) ? 4 : Math.min(4,st.step+1);
   st.sel=null; render(); window.scrollTo(0,0);
 });
 $('back').addEventListener('click', ()=>{
   if (st.step===0 && st.lineChosen && linesOn().length>1 && !hashLine){ st.lineChosen=false; render(); return; }
-  st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : st.step-1; render(); window.scrollTo(0,0); });
+  st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : (st.step===4 && over()) ? 1 : st.step-1; render(); window.scrollTo(0,0); });
 $('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.line=P()?.line||st.line; st.lineChosen=true; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
 $('fbl').addEventListener('click', ()=>{ st.step=5; render(); window.scrollTo(0,0); });
 
