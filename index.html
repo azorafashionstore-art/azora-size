@@ -402,7 +402,8 @@ function load(raw){
     const mine = (d.pieces||[]).filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>{
       const code = String(r[0]).trim().toLowerCase();
       return {key:`${L.k}-${code}`, code, line:L.k, name:String(r[1]).trim(),
-        areas:['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
+        // all three blank = not filled yet, so count all three; an explicit "لا" in all three = body shape doesn't matter for this piece
+        areas:[2,3,4].every(i=>String(r[i]??'').trim()==='') ? ['chest','stomach','hips'] : ['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
         slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim(), en:cEn>=0 ? String(r[cEn]||'').trim() : '', max:cMax>=0 && num(r[cMax])>0 ? num(r[cMax]) : null};
     });
     // column H "ظاهر في الموقع": unchecking a normal-height row hides that size for the piece; unchecking a custom row drops just that row
@@ -425,13 +426,13 @@ function load(raw){
     if (!got.length && L.k==='casual' && raw.legacy) got = build(L, raw.legacy);
     PIECES.push(...got);
   }
-  PIECES.forEach(p=>{ if(!p.areas.length) p.areas=['chest','stomach','hips']; });
 }
 // 01xxxxxxxxx (أو 1xxxxxxxxx لو الشيت شال الصفر) => 201xxxxxxxxx
 const waNum = v => { let d = String(v||'').replace(/[٠-٩]/g,x=>'٠١٢٣٤٥٦٧٨٩'.indexOf(x)).replace(/\D/g,'');
   if (/^00/.test(d)) d = d.slice(2); if (/^01\d{9}$/.test(d)) d = '2'+d; else if (/^1\d{9}$/.test(d)) d = '20'+d; return d.length>=11 ? d : ''; };
 const waLink = t => `https://wa.me/${waNum(WHATSAPP)}?text=${encodeURIComponent(t)}`;
 const al = n => /^ال/.test(n) ? n : 'ال'+n;
+const noBody = () => !!(P() && !P().areas.length);
 const over = () => { const p = P(); return !!(p && p.max && st.w > p.max); };
 const linesOn = () => LINES.filter(L=>PIECES.some(p=>p.line===L.k));
 const lineName = k => { const x = LINES.find(z=>z.k===k); return x ? (lang==='en' ? x.en : x.name) : ''; };
@@ -487,7 +488,7 @@ function baseIdx(){
 function rec(){
   const p = P(), L = list(), b = baseIdx();
   const ch = p.areas.map(a=>st.shape[a]-1);
-  let shapeShift = ch.some(c=>c>0) ? 1 : ch.every(c=>c<0) ? -1 : 0;
+  let shapeShift = ch.some(c=>c>0) ? 1 : (ch.length && ch.every(c=>c<0)) ? -1 : 0;
   const fitShift = st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
   const raw = b.i + shapeShift + fitShift;
   const i = Math.max(0, Math.min(L.length-1, Math.round(raw)));
@@ -544,7 +545,7 @@ function sorry(){
   const alt = PIECES.filter(x=>x.line===p.line && x.key!==p.key && !(x.max && st.w > x.max));
   $('alt').innerHTML = alt.length ? `<div class="t">${T('قطع تانية ممكن تناسبك','Other pieces that may suit you')}</div><div>${alt.map(x=>`<button type="button" data-p="${esc(x.key)}">${esc(pn(x))}</button>`).join('')}</div>` : '';
 }
-$('alt').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; st.step=2; render(); window.scrollTo(0,0); });
+$('alt').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.piece=b.dataset.p; st.sel=null; st.step=noBody()?3:2; render(); window.scrollTo(0,0); });
 function result(){
   const no = over(); $('sorry').hidden = !no; $('res').hidden = no;
   if (no) return sorry();
@@ -560,7 +561,7 @@ function result(){
   // how each area sits in size i: + roomy, − snug
   const ds = p.areas.map(a=>({a, d: (i - r.base) - (st.shape[a]-1)}));
   const want = r.fitShift;
-  const dev = ds.reduce((s,x)=>s+Math.abs(x.d - want),0)/ds.length;
+  const dev = ds.length ? ds.reduce((s,x)=>s+Math.abs(x.d - want),0)/ds.length : Math.abs((i - r.base) - want);
   let pct = Math.round(96 - dev*22 - (r.exact?0:12) - (r.edge && i===r.i ? 10 : 0));
   if (r.hid && i===r.i) pct = Math.min(pct, 65);
   pct = Math.max(45, Math.min(97, pct));
@@ -570,7 +571,7 @@ function result(){
   $('rconf').textContent = i===r.i ? (r.hid ? T('أقرب مقاس متاح ليكي.','The closest size available for you.') : pct>=80 ? T('ترشيح واثق على حسب قياساتك.','A confident match for your measurements.') : T('أقرب مقاس ليكي.','The closest size for you.')) : T(`المقاس المرشح ليكي ${L[r.i].n}`, `Your recommended size is ${L[r.i].n}`);
   $('facts').innerHTML = `<div>${T('الطول','Height')}<b>${st.h} ${T('سم','cm')}</b></div><div>${T('الوزن','Weight')}<b>${st.w} ${T('كجم','kg')}</b></div><div>${T('بتحبيها','Fit')}<b>${T(fit.n, fit.ne)}</b></div>`;
   $('sizes').innerHTML = L.map((s,k)=>`<button type="button" data-i="${k}" class="${k===i?'sel':''} ${k===r.i?'rec':''}" aria-pressed="${k===i}">${s.n}</button>`).join('');
-  $('scale').innerHTML = `<div></div><div class="h"><span>${T('ضيق','Snug')}</span><span>${T('مظبوط','Ideal')}</span><span>${T('واسع','Roomy')}</span></div>` +
+  $('scale').innerHTML = !ds.length ? '' : `<div></div><div class="h"><span>${T('ضيق','Snug')}</span><span>${T('مظبوط','Ideal')}</span><span>${T('واسع','Roomy')}</span></div>` +
     ds.map(x=>`<div class="n">${an(x.a)}</div><div class="track"><span class="dot" style="inset-inline-start:${Math.max(4,Math.min(96,50+x.d*28))}%"></span></div>`).join('');
   const tight = ds.filter(x=>x.d<0).map(x=>an(x.a)), loose = ds.filter(x=>x.d>0).map(x=>an(x.a));
   const and = T(' و',' and ');
@@ -578,6 +579,7 @@ function result(){
     (r.edge && r.i===L.length-1 && i===r.i) ? T('ده أكبر مقاس متاح في القطعة دي، وممكن يبقى ضيق عليكي. كلمينا قبل الطلب ونشوف أنسب حل.','This is the largest size available in this piece and it may feel tight. Message us before ordering and we’ll find the best option.')
     : r.hid && i===r.i ? T(`مقاسك (${r.hid}) مش متاح في القطعة دي دلوقتي، وده أقرب مقاس ليكي. كلمينا لو محتارة.`, `Your size (${r.hid}) isn’t available in this piece right now, so this is the closest one. Message us if you’re unsure.`)
     : !r.exact && i===r.i ? T('قياساتك برا الجدول المعتاد للقطعة دي. كلمينا قبل الطلب ونتأكد إنها هتريحك.','Your measurements are outside the usual range for this piece. Message us before ordering so we can make sure it fits.')
+    : !ds.length && i!==r.i ? (i>r.i ? T('المقاس ده أوسع من مقاسك المرشح.','This size is roomier than your recommended size.') : T('المقاس ده أضيق من مقاسك المرشح.','This size is snugger than your recommended size.'))
     : tight.length ? T(`المقاس ده هيبقى ضيق شوية في ${tight.join(and)}.${i===r.i?'':' لو بتحبي براح خدي المرشح.'}`, `This size will be a little snug at the ${tight.join(and).toLowerCase()}.${i===r.i?'':' If you like room, take the recommended size.'}`)
     : loose.length ? T(`المقاس ده هيبقى واسع في ${loose.join(and)}${st.fit==='relaxed'&&i===r.i?'، زي ما بتحبي.':'.'}`, `This size will be roomy at the ${loose.join(and).toLowerCase()}${st.fit==='relaxed'&&i===r.i?', just how you like it.':'.'}`)
     : T('القطعة هتلبس عليكي مظبوط زي ما هي متصممة.','This piece will fit you just as it was designed.');
@@ -603,9 +605,9 @@ function render(){
   if (L0) $('again').innerHTML = L(`أهلًا بيكي تاني! آخر مرة مقاسك في ${pn(L0)} كان <b>${st.last.size}</b><button type="button" id="seeLast">شوفي نتيجتك</button>`, `Welcome back! Last time your ${pn(L0).toLowerCase()} size was <b>${st.last.size}</b><button type="button" id="seeLast">See my result</button>`);
   $('fbl').hidden = !(FEEDBACK_ON && FEEDBACK_URL);
   // كاجوال / ليدي counts as its own step when both lines are on
-  const multi = LO.length > 1, total = multi ? 5 : 4;
-  const pos = st.step===0 ? (multi && !pickLine ? 2 : 1) : Math.min(st.step,4) + 1 + (multi ? 1 : 0) - (st.step>=4 ? 1 : 0);
-  const labels = lang==='en' ? [...(multi ? ['Casual / Lady'] : []), 'Piece', 'Height & weight', 'Body shape', 'Fit'] : [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'طريقة اللبس'];
+  const multi = LO.length > 1, nb = st.step>0 && noBody(), total = (multi ? 5 : 4) - (nb ? 1 : 0);
+  const pos = st.step===0 ? (multi && !pickLine ? 2 : 1) : Math.min(st.step,4) + 1 + (multi ? 1 : 0) - (st.step>=4 ? 1 : 0) - (nb && st.step>=3 ? 1 : 0);
+  const labels = (lang==='en' ? [...(multi ? ['Casual / Lady'] : []), 'Piece', 'Height & weight', 'Body shape', 'Fit'] : [...(multi ? ['كاجوال / ليدي'] : []), 'القطعة', 'الطول والوزن', 'شكل الجسم', 'طريقة اللبس']).filter(t=>!nb || !/Body shape|شكل الجسم/.test(t));
   $('steps4').innerHTML = labels.map((t,k)=>`<span><b>${k+1}</b>${t}</span>`).join('');
   $('nq').textContent = total;
   $('prog').innerHTML = Array.from({length:total},(_,k)=>`<i class="${k < pos ? 'on' : ''}"></i>`).join('');
@@ -635,12 +637,12 @@ function render(){
 $('next').addEventListener('click', ()=>{
   if (st.step===5) return fbSend();
   if (st.step===4){ st.step=0; st.piece=null; st.lineChosen=false; hashPiece=false; }
-  else st.step = (st.step===1 && over()) ? 4 : Math.min(4,st.step+1);
+  else st.step = (st.step===1 && over()) ? 4 : (st.step===1 && noBody()) ? 3 : Math.min(4,st.step+1);
   st.sel=null; render(); window.scrollTo(0,0);
 });
 $('back').addEventListener('click', ()=>{
   if (st.step===0 && st.lineChosen && linesOn().length>1 && !hashLine){ st.lineChosen=false; render(); return; }
-  st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : (st.step===4 && over()) ? 1 : st.step-1; render(); window.scrollTo(0,0); });
+  st.step = (st.step===5 || (st.step===1 && hashPiece)) ? -1 : (st.step===4 && over()) ? 1 : (st.step===3 && noBody()) ? 1 : st.step-1; render(); window.scrollTo(0,0); });
 $('again').addEventListener('click', e=>{ if(!e.target.closest('#seeLast')) return; st.piece=st.last.piece; st.line=P()?.line||st.line; st.lineChosen=true; st.step=4; st.sel=null; render(); window.scrollTo(0,0); });
 $('fbl').addEventListener('click', ()=>{ st.step=5; render(); window.scrollTo(0,0); });
 
