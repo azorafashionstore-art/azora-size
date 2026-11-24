@@ -426,13 +426,15 @@ function load(raw){
     // optional columns are found by their header, so their order in the sheet doesn't matter
     const hd = (d.pieces||[]).find(r=>/اسم القطعة/.test(r.join(' '))) || [];
     const col = re => hd.findIndex(h=>re.test(String(h)));
-    const cMax = col(/أقصى وزن|اقصى وزن|أقصي وزن|اقصي وزن/), cEn = col(/(بالإنجليزي|بالانجليزي|english)/i) >= 0 && !/كود/.test(hd[col(/(بالإنجليزي|بالانجليزي|english)/i)]) ? col(/(بالإنجليزي|بالانجليزي|english)/i) : (hd.length ? -1 : 9);
+    const cMax = col(/أقصى وزن|اقصى وزن|أقصي وزن|اقصي وزن/), cRule = col(/ياخد قرار|يأخذ قرار|بيغي[ّ]?ر المقاس/), cEn = col(/(بالإنجليزي|بالانجليزي|english)/i) >= 0 && !/كود/.test(hd[col(/(بالإنجليزي|بالانجليزي|english)/i)]) ? col(/(بالإنجليزي|بالانجليزي|english)/i) : (hd.length ? -1 : 9);
     const mine = (d.pieces||[]).filter(r=>r[0] && r[1] && !/اسم القطعة|كود/.test(r[0]+r[1]) && !off(r[8])).map(r=>{
       const code = String(r[0]).trim().toLowerCase();
       return {key:`${L.k}-${code}`, code, line:L.k, name:String(r[1]).trim(),
         // all three blank = not filled yet, so count all three; an explicit "لا" in all three = body shape doesn't matter for this piece
         areas:[2,3,4].every(i=>String(r[i]??'').trim()==='') ? ['chest','stomach','hips'] : ['chest','stomach','hips'].filter((a,i)=>yes(r[2+i])),
-        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim(), en:cEn>=0 ? String(r[cEn]||'').trim() : '', max:cMax>=0 && num(r[cMax])>0 ? num(r[cMax]) : null};
+        slim:num(r[5]) ?? 0, relaxed:num(r[6]) ?? 1, img:String(r[7]||'').trim(), en:cEn>=0 ? String(r[cEn]||'').trim() : '', max:cMax>=0 && num(r[cMax])>0 ? num(r[cMax]) : null,
+        // "الموقع ياخد قرار من شكل الجسم وطريقة اللبس؟": ticked = body choices and tight/loose change the size; unticked = shown on the screenshot only, size from height and weight. No column = decides (old sheets)
+        bodyRule: cRule<0 || yes(r[cRule])};
     });
     // column H "ظاهر في الموقع": unchecking a normal-height row hides that size for the piece; unchecking a custom row drops just that row
     const hidden = new Set();
@@ -516,9 +518,9 @@ function baseIdx(){
 function rec(){
   const p = P(), L = list(), b = baseIdx();
   // +1 only if EVERY area that matters is bigger, -1 only if every one is smaller; mixed = no change. cm is info only.
-  const ch = p.areas.map(a=>st.shape[a]-1);
+  const ch = p.bodyRule===false ? [] : p.areas.map(a=>st.shape[a]-1);
   const shapeShift = ch.length && ch.every(c=>c>0) ? 1 : ch.length && ch.every(c=>c<0) ? -1 : 0;
-  const fitShift = st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
+  const fitShift = p.bodyRule===false ? 0 : st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
   const raw = b.i + shapeShift + fitShift;
   const i = Math.max(0, Math.min(L.length-1, Math.round(raw)));
   return {i, base:b.i, exact:b.exact, hid:b.hid, edge: raw > L.length-1 || raw < 0, fitShift};
@@ -644,7 +646,7 @@ function result(){
   $('wab').href = waLink(T(`أهلًا أزورا 🤍 مقاسي في ${al(p.name)}${linesOn().length>1?` (${lineName(p.line)})`:''} طلع ${L[i].n}. هبعتلكم السكرين شوت دلوقتي.`, `Hi Azora 🤍 My size in the ${pn(p).toLowerCase()}${linesOn().length>1?` (${lineName(p.line)})`:''} is ${L[i].n}. Sending you the screenshot now.`));
   $('rsz').textContent = L[i].n;
   // how each area sits in size i: + roomy, − snug
-  const ds = p.areas.map(a=>({a, d: (i - r.base) - (st.shape[a]-1)}));
+  const ds = p.bodyRule===false ? [] : p.areas.map(a=>({a, d: (i - r.base) - (st.shape[a]-1)}));
   const want = r.fitShift;
   const dev = ds.length ? ds.reduce((s,x)=>s+Math.abs(x.d - want),0)/ds.length : Math.abs((i - r.base) - want);
   let pct = Math.round(96 - dev*22 - (r.exact?0:12) - (r.edge && i===r.i ? 10 : 0));
