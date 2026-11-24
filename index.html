@@ -122,6 +122,23 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .live{display:flex;justify-content:space-between;align-items:center;margin-top:26px;padding:14px 16px;background:var(--soft);border-radius:4px}
 .live .t{font-size:13px;color:var(--mute)}.live b{font-size:26px;font-weight:400;direction:ltr}
 /* step 2 */
+.body2{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start}
+.body2 .fig{position:sticky;top:12px}
+.body2 .opts{gap:4px}.body2 .opts button{padding:8px 2px 6px;font-size:12px}.body2 .opts button svg{width:32px;height:32px;margin-bottom:4px}
+.body2 .fig svg{width:100%;height:auto;display:block;overflow:visible}
+.area .t{font-size:14px;margin-bottom:8px;font-weight:500}
+.cmr{margin-top:6px;padding:10px 12px 8px;border:1px dashed var(--line);border-radius:6px}
+.cmr .h{font-size:12px;line-height:1.5;color:var(--mute)}
+.cmr .h i{display:block;font-style:normal;font-size:11px;opacity:.85}
+.cmr .h b{display:block;margin-top:2px;font-size:20px;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.cmr .h b small{font-size:12px;color:var(--mute)}
+.cmr .h b.no{font-size:13px;color:var(--mute)}
+.cmr .row{margin-top:2px}
+.cmr .pm{width:36px;height:36px;font-size:18px}
+.cmr .clr{background:none;border:0;padding:0 0 0 2px;color:var(--pinkInk);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
+.facts.m{margin-top:8px;padding-top:8px}
+.facts.m div{padding:0 4px}
+.facts .cm{font-size:12px;color:var(--mute);font-weight:400;margin-top:1px}
 .area+.area{margin-top:18px}
 .area .t{font-size:14px;margin-bottom:8px}
 .opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -236,7 +253,7 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
 
   <section class="step" id="s2">
     <h1 data-t="s2a">شكل جسمك</h1>
-    <p class="sub" data-t="s2b">الهدوم بتلبس على الجسم مش على الأرقام. مش متأكدة؟ سيبيها متوسط.</p>
+    <p class="sub" data-t="s2b">اختاري الأقرب ليكي. ولو عارفة المحيط بالسنتي حطيه تحت، ده اختياري.</p>
     <div id="areas"></div>
   </section>
 
@@ -266,6 +283,7 @@ footer{position:sticky;bottom:0;background:var(--paper);border-top:1px solid var
       <div class="match" id="rmatch"></div>
       <p class="conf" id="rconf"></p>
       <div class="facts" id="facts"></div>
+      <div class="facts m" id="mfacts"></div>
       <div class="ref"><span data-t="r2">دليل مقاسات أزورا</span><span id="rref"></span></div>
     </div>
     <div class="sizes" id="sizes"></div>
@@ -357,7 +375,7 @@ const EN = {
   w1:'Welcome to <em>Azora</em>', w2:'Answer <span id="nq">5</span> quick questions and we’ll tell you the size that fits you best.',
   w3:'Find my size', k:'Find your perfect size', s1a:'Your height & weight', s1b:'Drag the slider or tap + and −',
   hh:'Height', ww:'Weight', cm:'cm', kg:'kg', e1:'First estimate', e2:'We’ll refine it in the next steps',
-  s2a:'Your body shape', s2b:'Clothes fit bodies, not numbers. Not sure? Leave it at average.',
+  s2a:'Your body shape', s2b:'Pick what’s closest to you. If you know the exact size in cm, add it below (optional).',
   s3a:'How do you like it to fit?', s3b:'We’ll pick the size around the way you wear it.',
   r1:'Your best size', r2:'Azora size guide', r3:'Tap any size to see how it would fit',
   r4:'Fit note', r5:'Take a screenshot of this screen and send it to us with your order.',
@@ -380,6 +398,16 @@ const AREAS = {
   hips:   {name:'الأرداف', en:'Hips', oe:['Narrower','Average','Fuller'], o:['أضيق','متوسطة','أعرض'],   ic:['M16 8q-3 12 0 24M24 8q3 12 0 24','M15 8q-6 12 0 24M25 8q6 12 0 24','M14 8q-10 12 0 24M26 8q10 12 0 24']}
 };
 const an = a => lang==='en' ? AREAS[a].en : AREAS[a].name;
+// body measurements in cm (step 2). min/max = slider range; how = how to measure
+const CM = {
+  chest:  {ar:'محيط الصدر',   en:'Bust',  min:70, max:170, how:'من أعرض حتة في الصدر',   howe:'Around the fullest part of the bust'},
+  stomach:{ar:'محيط البطن',   en:'Waist / tummy', min:55, max:170, how:'من عند السرة',   howe:'Around the belly button'},
+  hips:   {ar:'محيط الأرداف', en:'Hips',  min:75, max:180, how:'من أعرض حتة في الأرداف', howe:'Around the fullest part of the hips'}
+};
+// what's typical for her height and weight, used as the starting point for the figure
+const typical = (a, h=st.h, w=st.w) => Math.round(a==='chest' ? 58 + 0.62*w - 0.08*(h-160) : a==='stomach' ? 28 + 0.78*w - 0.15*(h-160) : 62 + 0.6*w - 0.05*(h-160));
+// 'info': measurements only go on the result screen. 'compare': all نعم areas bigger than typical => +1 size, all smaller => -1 (never below L)
+const cmVal = a => st.cm[a] ?? (typical(a) + (st.shape[a]-1)*9);
 const FITS = [
   {k:'slim',    n:'ضيق ومحدد',  d:'ماشي مع الجسم وبيبين التفاصيل.',      ne:'Fitted',  de:'Follows the body. Sharp and tailored.', w:12},
   {k:'regular', n:'عادي',       d:'زي ما القطعة متصممة بالظبط.',          ne:'Regular', de:'The fit the piece was designed for.',  w:18},
@@ -462,8 +490,8 @@ async function fetchSheet(){
   return raw;
 }
 
-let st = {line:null, piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, fit:'regular', step:-1, sel:null, last:null};
-try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); if (s.shape) Object.assign(st.shape, s.shape); } catch(_){}
+let st = {line:null, piece:null, h:160, w:65, shape:{chest:1,stomach:1,hips:1}, cm:{}, fit:'regular', step:-1, sel:null, last:null};
+try { const s = JSON.parse(localStorage.getItem('azora-size2')||'{}'); ['h','w','fit','last'].forEach(k=>{ if(s[k]!=null) st[k]=s[k]; }); if (s.cm) st.cm = s.cm; if (s.shape) Object.assign(st.shape, s.shape); } catch(_){}
 const save = () => { try { localStorage.setItem('azora-size2', JSON.stringify(st)); } catch(_){} };
 const P = () => PIECES.find(p=>p.key===st.piece);
 // the sizes this piece offers: in Azora order, only sizes with a visible row
@@ -487,8 +515,9 @@ function baseIdx(){
 }
 function rec(){
   const p = P(), L = list(), b = baseIdx();
+  // +1 only if EVERY area that matters is bigger, -1 only if every one is smaller; mixed = no change. cm is info only.
   const ch = p.areas.map(a=>st.shape[a]-1);
-  let shapeShift = ch.some(c=>c>0) ? 1 : (ch.length && ch.every(c=>c<0)) ? -1 : 0;
+  const shapeShift = ch.length && ch.every(c=>c>0) ? 1 : ch.length && ch.every(c=>c<0) ? -1 : 0;
   const fitShift = st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
   const raw = b.i + shapeShift + fitShift;
   const i = Math.max(0, Math.min(L.length-1, Math.round(raw)));
@@ -518,11 +547,67 @@ function figure(){
 }
 
 // step 2
+let bodyKey = '', bodyFocus = null;
 function areasHTML(){
-  return P().areas.map(a=>`<div class="area"><div class="t">${an(a)}</div><div class="opts">${
-    AREAS[a].o.map((o,i)=>`<button type="button" data-a="${a}" data-i="${i}" aria-pressed="${st.shape[a]===i}"><svg viewBox="0 0 40 40"><path d="${AREAS[a].ic[i]}"/></svg>${L(o, AREAS[a].oe[i])}</button>`).join('')}</div></div>`).join('');
+  const p = P();
+  return `<div class="body2"><div class="fig"><svg id="bfig" viewBox="0 0 80 200" aria-hidden="true"></svg></div><div>${
+    p.areas.map(a=>`<div class="area mctl" data-m="${a}"><div class="t">${an(a)}</div><div class="opts">${
+      AREAS[a].o.map((o,i)=>`<button type="button" data-a="${a}" data-i="${i}"><svg viewBox="0 0 40 40"><path d="${AREAS[a].ic[i]}"/></svg>${L(o, AREAS[a].oe[i])}</button>`).join('')}</div>
+      <div class="cmr"><div class="h">${L('المحيط بالسنتي (اختياري)','Exact size in cm (optional)')}<i>${L(CM[a].how, CM[a].howe)}</i><b class="mv"></b></div>
+      <div class="row"><button class="pm" type="button" data-d="1" aria-label="${L('زودي','More')}">+</button><input type="range" min="${CM[a].min}" max="${CM[a].max}" step="1" aria-label="${L(CM[a].ar, CM[a].en)}"><button class="pm" type="button" data-d="-1" aria-label="${L('قللي','Less')}">−</button></div></div>
+    </div>`).join('')}</div></div>`;
 }
-$('areas').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; st.shape[b.dataset.a]=+b.dataset.i; render(); });
+const cmSet = (a, v) => { st.cm[a] = Math.max(CM[a].min, Math.min(CM[a].max, Math.round(v))); bodyFocus = a; };
+$('areas').addEventListener('input', e=>{ const m=e.target.closest('.mctl'); if(!m || e.target.type!=='range') return; cmSet(m.dataset.m, +e.target.value); render(); });
+$('areas').addEventListener('click', e=>{
+  const o=e.target.closest('.opts button'); if (o){ st.shape[o.dataset.a]=+o.dataset.i; bodyFocus=o.dataset.a; render(); return; }
+  const c=e.target.closest('.clr'); if (c){ delete st.cm[c.dataset.a]; render(); return; }
+  const b=e.target.closest('.pm'), m=e.target.closest('.mctl'); if(!b||!m) return; cmSet(m.dataset.m, cmVal(m.dataset.m) + +b.dataset.d); render(); });
+function bodyUpdate(){
+  const p = P();
+  document.querySelectorAll('#areas .mctl').forEach(m=>{ const a = m.dataset.m, v = cmVal(a), set = st.cm[a]!=null;
+    m.querySelectorAll('.opts button').forEach(b=>b.setAttribute('aria-pressed', st.shape[a]===+b.dataset.i));
+    const mv = m.querySelector('.mv'); mv.classList.toggle('no', !set);
+    mv.innerHTML = set ? `${v} <small>${L('سم','cm')}</small> <button type="button" class="clr" data-a="${a}">${L('مسح','clear')}</button>` : L('مش محدد','Not set');
+    const r = m.querySelector('input'); if (+r.value!==v) r.value = v;
+  });
+  bodyTo({c:cmVal('chest'), s:cmVal('stomach'), hp:cmVal('hips')}, p.areas);
+}
+// realistic front silhouette in cm units; animates toward the target measurements
+let bodyNow = null, bodyRaf = 0;
+function bodyTo(t, areas){
+  if (!bodyNow) bodyNow = {...t};
+  const from = {...bodyNow}, t0 = performance.now();
+  cancelAnimationFrame(bodyRaf);
+  const step = now => { const k = Math.min(1, (now - t0)/260), e = 1 - Math.pow(1-k, 3);
+    for (const x in t) bodyNow[x] = from[x] + (t[x]-from[x])*e;
+    drawBody(bodyNow, areas); if (k<1) bodyRaf = requestAnimationFrame(step); };
+  bodyRaf = requestAnimationFrame(step);
+}
+function drawBody({c, s, hp}, areas){
+  const el = $('bfig'); if (!el) return;
+  const h = st.h, H = h/7.6;                    // head height
+  const bw = c*0.165, ww = s*0.155, hw = hp*0.17, sh = Math.max(bw*1.08, 17 + (c-90)*0.08);
+  const Y = f => f*H;
+  // right outline, top to crotch
+  const R = [[3.6,Y(.98)],[4.2,Y(1.18)],[sh*0.78,Y(1.3)],[sh,Y(1.5)],[bw*0.97,Y(1.85)],[bw,Y(2.15)],[ww*0.88+bw*0.06,Y(2.6)],[ww*0.93,Y(2.95)],[ww,Y(3.2)],[hw*0.96,Y(3.65)],[hw,Y(3.95)],
+    [hw*0.9,Y(4.4)],[hw*0.6,Y(5.4)],[hw*0.47,Y(5.75)],[hw*0.5,Y(6.2)],[3.3,Y(7.15)],[4.4,Y(7.5)],[0.9,Y(7.6)],[1.1,Y(7.1)],[1.6,Y(5.8)],[1.3,Y(5.4)],[0.7,Y(4.3)]];
+  const pts = [...R, [0,Y(4.15)], ...R.slice().reverse().map(([x,y])=>[-x,y])];
+  // closed catmull-rom spline
+  const n = pts.length, f = v => v.toFixed(2);
+  let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i=0;i<n;i++){ const p0=pts[(i-1+n)%n], p1=pts[i], p2=pts[(i+1)%n], p3=pts[(i+2)%n];
+    d += `C${f(p1[0]+(p2[0]-p0[0])/6)} ${f(p1[1]+(p2[1]-p0[1])/6)} ${f(p2[0]-(p3[0]-p1[0])/6)} ${f(p2[1]-(p3[1]-p1[1])/6)} ${f(p2[0])} ${f(p2[1])}`; }
+  // arms
+  const arm = side => { const sx = side*sh, ex = side*(Math.max(bw, ww)+4.2), wx = side*(hw+2.6);
+    return `M${f(sx)} ${f(Y(1.48))}Q${f(sx+side*3.5)} ${f(Y(1.55))} ${f(ex+side*1.8)} ${f(Y(2.9))}L${f(wx+side*1.2)} ${f(Y(3.95))}Q${f(wx)} ${f(Y(4.15))} ${f(wx-side*1.6)} ${f(Y(3.95))}L${f(ex-side*1.4)} ${f(Y(2.95))}Q${f(sx-side*0.5)} ${f(Y(2.2))} ${f(sx-side*2)} ${f(Y(1.75))}Z`; };
+  const band = (a, y, w) => areas.includes(a) ? `<ellipse cx="0" cy="${f(y)}" rx="${f(w+1.2)}" ry="${f(w*0.16+0.8)}" fill="none" stroke="var(--pink)" stroke-width="${bodyFocus===a?1.1:0.6}" opacity="${bodyFocus===a?1:0.45}"/>` : '';
+  const W = Math.max(hw+6, sh+6, 40);
+  el.setAttribute('viewBox', `${f(-W)} -4 ${f(W*2)} ${f(h+8)}`);
+  el.innerHTML = `<ellipse cx="0" cy="${f(Y(.5))}" rx="${f(H*0.37)}" ry="${f(H*0.5)}" fill="currentColor"/>
+    <path d="${d}" fill="currentColor"/><path d="${arm(1)}" fill="currentColor"/><path d="${arm(-1)}" fill="currentColor"/>
+    ${band('chest', Y(2.15), bw)}${band('stomach', Y(3.2), ww)}${band('hips', Y(3.95), hw)}`;
+}
 
 // step 3
 function fitsHTML(){
@@ -570,6 +655,8 @@ function result(){
   $('rmatch').textContent = T(`${pct}% تطابق`, `${pct}% fit match`);
   $('rconf').textContent = i===r.i ? (r.hid ? T('أقرب مقاس متاح ليكي.','The closest size available for you.') : pct>=80 ? T('ترشيح واثق على حسب قياساتك.','A confident match for your measurements.') : T('أقرب مقاس ليكي.','The closest size for you.')) : T(`المقاس المرشح ليكي ${L[r.i].n}`, `Your recommended size is ${L[r.i].n}`);
   $('facts').innerHTML = `<div>${T('الطول','Height')}<b>${st.h} ${T('سم','cm')}</b></div><div>${T('الوزن','Weight')}<b>${st.w} ${T('كجم','kg')}</b></div><div>${T('بتحبيها','Fit')}<b>${T(fit.n, fit.ne)}</b></div>`;
+  $('mfacts').hidden = !p.areas.length;
+  $('mfacts').innerHTML = p.areas.map(a=>`<div>${an(a)}<b>${T(AREAS[a].o[st.shape[a]], AREAS[a].oe[st.shape[a]])}</b><b class="cm">${st.cm[a]!=null ? `${st.cm[a]} ${T('سم','cm')}` : T('مش عارفة المحيط','cm not given')}</b></div>`).join('');
   $('sizes').innerHTML = L.map((s,k)=>`<button type="button" data-i="${k}" class="${k===i?'sel':''} ${k===r.i?'rec':''}" aria-pressed="${k===i}">${s.n}</button>`).join('');
   $('scale').innerHTML = !ds.length ? '' : `<div></div><div class="h"><span>${T('ضيق','Snug')}</span><span>${T('مظبوط','Ideal')}</span><span>${T('واسع','Roomy')}</span></div>` +
     ds.map(x=>`<div class="n">${an(x.a)}</div><div class="track"><span class="dot" style="inset-inline-start:${Math.max(4,Math.min(96,50+x.d*28))}%"></span></div>`).join('');
@@ -623,7 +710,9 @@ function render(){
     $('hv').textContent=st.h; $('wv').textContent=st.w; $('h').value=st.h; $('w').value=st.w;
     figure();
     $('est').textContent = over() ? '—' : list()[baseIdx().i].n;
-    $('areas').innerHTML = areasHTML();
+    const bk = st.piece + lang;
+    if (bk!==bodyKey){ bodyKey = bk; bodyNow = null; $('areas').innerHTML = areasHTML(); }
+    bodyUpdate();
     $('fits').innerHTML = fitsHTML();
     if (st.step===4) result();
   }
@@ -662,7 +751,7 @@ $('fbs').addEventListener('change', e=>{ fb.size=e.target.value; });
 $('fbfit').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; fb.fit=b.dataset.v; render(); });
 async function fbSend(){
   if (!fb.fit || fbSent) return;
-  const shape = Object.entries(st.shape).map(([a,i])=>`${AREAS[a].name}: ${AREAS[a].o[i]}`).join('، ');
+  const shape = Object.entries(st.shape).map(([a,i])=>`${AREAS[a].name}: ${AREAS[a].o[i]}${st.cm[a]!=null?` (${st.cm[a]} سم)`:''}`).join('، ');
   const data = new URLSearchParams({piece: (p=>p?`${p.name} · ${lineName(p.line)}`:fb.piece)(PIECES.find(p=>p.key===fb.piece)), size: fb.size||'', result: fb.fit,
     recommended: st.last?.piece===fb.piece ? st.last.size : '', height: st.h, weight: st.w, shape, style: FITS.find(f=>f.k===st.fit).n,
     note: $('fbn').value.slice(0,500), contact: $('fbc').value.slice(0,100)});
