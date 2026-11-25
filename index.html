@@ -561,14 +561,14 @@ $('areas').addEventListener('input', e=>{ const m=e.target.closest('.mctl'); if(
 $('areas').addEventListener('click', e=>{
   const o=e.target.closest('.opts button'); if (o){ st.shape[o.dataset.a]=+o.dataset.i; bodyFocus=o.dataset.a; render(); return; }
   const c=e.target.closest('.clr'); if (c){ delete st.cm[c.dataset.a]; render(); return; }
-  const b=e.target.closest('.pm'), m=e.target.closest('.mctl'); if(!b||!m) return; cmSet(m.dataset.m, (st.cm[m.dataset.m] ?? 0) + +b.dataset.d); render(); });
+  const b=e.target.closest('.pm'), m=e.target.closest('.mctl'); if(!b||!m) return; cmSet(m.dataset.m, cmVal(m.dataset.m) + +b.dataset.d); render(); });
 function bodyUpdate(){
   const p = P();
   document.querySelectorAll('#areas .mctl').forEach(m=>{ const a = m.dataset.m, v = cmVal(a), set = st.cm[a]!=null;
     m.querySelectorAll('.opts button').forEach(b=>b.setAttribute('aria-pressed', st.shape[a]===+b.dataset.i));
     const mv = m.querySelector('.mv'); mv.classList.toggle('no', !set);
     mv.innerHTML = set ? `${v} <small>${L('سم','cm')}</small> <button type="button" class="clr" data-a="${a}">${L('مسح','clear')}</button>` : L('مش محدد','Not set');
-    const r = m.querySelector('input'), rv = set ? v : 0; if (+r.value!==rv) r.value = rv;
+    const r = m.querySelector('input'); if (+r.value!==v) r.value = v;
   });
   bodyTo({c:cmVal('chest'), s:cmVal('stomach'), hp:cmVal('hips')}, p.areas);
 }
