@@ -104,7 +104,7 @@ h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4
 .lines button:hover,.lines button:focus-visible{border-color:var(--pink)}
 .lines button:active{transform:scale(.98)}
 .chg{background:none;border:0;padding:0;color:var(--pinkInk);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:15px;min-height:32px}
-.langbtn{position:fixed;top:calc(12px + env(safe-area-inset-top));inset-inline-end:max(12px,calc(50vw - 248px));z-index:20;min-width:44px;height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.92);color:var(--pinkInk);font:600 13px/1 "IBM Plex Sans Arabic",sans-serif;cursor:pointer;letter-spacing:.04em}
+.langbtn{position:absolute;top:calc(12px + env(safe-area-inset-top));inset-inline-end:max(12px,calc(50vw - 248px));z-index:20;min-width:44px;height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.92);color:var(--pinkInk);font:600 13px/1 "IBM Plex Sans Arabic",sans-serif;cursor:pointer;letter-spacing:.04em}
 .langbtn:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
 .load{color:var(--mute);font-size:14px;text-align:center;padding:30px 0}
 /* step 1 */
@@ -722,7 +722,7 @@ function render(){
     if (st.step===4) result();
   }
   // زرار واتساب الثابت
-  const wn = waNum(WHATSAPP); $('wa').hidden = !wn || st.step===5;
+  const wn = waNum(WHATSAPP); $('wa').hidden = !wn || st.step===5 || st.step===4;  // the result has its own WhatsApp button; the floating one covered the size tabs
   $('wa').classList.toggle('home', w);
   $('wa').href = waLink(L('أهلًا أزورا 🤍 عندي سؤال عن المقاسات','Hi Azora 🤍 I have a question about sizes'));
   $('wa').setAttribute('aria-label', L('كلمينا على واتساب','Chat with us on WhatsApp'));
