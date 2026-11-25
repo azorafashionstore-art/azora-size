@@ -109,7 +109,7 @@ h1{font-weight:500;font-size:clamp(26px,7vw,32px);line-height:1.2;margin:6px 0 4
 .load{color:var(--mute);font-size:14px;text-align:center;padding:30px 0}
 /* step 1 */
 .body1{display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;align-items:center}
-.fig svg{width:100%;height:230px;display:block}
+.fig svg{width:100%;height:230px;display:block;overflow:visible}
 .ctl+.ctl{margin-top:22px}
 .ctl .t{font-size:13px;color:var(--mute)}
 .ctl .v{font-size:44px;font-weight:300;line-height:1.1;font-variant-numeric:tabular-nums}
@@ -400,9 +400,9 @@ const AREAS = {
 const an = a => lang==='en' ? AREAS[a].en : AREAS[a].name;
 // body measurements in cm (step 2). min/max = slider range; how = how to measure
 const CM = {
-  chest:  {ar:'محيط الصدر',   en:'Bust',  min:70, max:170, how:'من أعرض حتة في الصدر',   howe:'Around the fullest part of the bust'},
-  stomach:{ar:'محيط البطن',   en:'Waist / tummy', min:55, max:170, how:'من عند السرة',   howe:'Around the belly button'},
-  hips:   {ar:'محيط الأرداف', en:'Hips',  min:75, max:180, how:'من أعرض حتة في الأرداف', howe:'Around the fullest part of the hips'}
+  chest:  {ar:'محيط الصدر',   en:'Bust',  min:0, max:200, how:'من أعرض حتة في الصدر',   howe:'Around the fullest part of the bust'},
+  stomach:{ar:'محيط البطن',   en:'Waist / tummy', min:0, max:200, how:'من عند السرة',   howe:'Around the belly button'},
+  hips:   {ar:'محيط الأرداف', en:'Hips',  min:0, max:200, how:'من أعرض حتة في الأرداف', howe:'Around the fullest part of the hips'}
 };
 // what's typical for her height and weight, used as the starting point for the figure
 const typical = (a, h=st.h, w=st.w) => Math.round(a==='chest' ? 58 + 0.62*w - 0.08*(h-160) : a==='stomach' ? 28 + 0.78*w - 0.15*(h-160) : 62 + 0.6*w - 0.05*(h-160));
@@ -521,9 +521,11 @@ function rec(){
   const ch = p.bodyRule===false ? [] : p.areas.map(a=>st.shape[a]-1);
   const shapeShift = ch.length && ch.every(c=>c>0) ? 1 : ch.length && ch.every(c=>c<0) ? -1 : 0;
   const fitShift = p.bodyRule===false ? 0 : st.fit==='slim' ? -p.slim : st.fit==='relaxed' ? p.relaxed : 0;
-  const raw = b.i + shapeShift + fitShift;
+  // body + fit together move the height/weight size by one size at most (bigger body + loose = +1, bigger body + tight = 0)
+  const total = Math.max(-1, Math.min(1, shapeShift + fitShift));
+  const raw = b.i + total;
   const i = Math.max(0, Math.min(L.length-1, Math.round(raw)));
-  return {i, base:b.i, exact:b.exact, hid:b.hid, edge: raw > L.length-1 || raw < 0, fitShift};
+  return {i, base:b.i, exact:b.exact, hid:b.hid, edge: raw > L.length-1 || raw < 0, fitShift: total - shapeShift};
 }
 
 // step 0
@@ -540,12 +542,7 @@ document.querySelectorAll('.pm').forEach(b=>b.addEventListener('click',()=>{ con
 $('h').addEventListener('input', e=>{ st.h=+e.target.value; render(); });
 $('w').addEventListener('input', e=>{ st.w=+e.target.value; render(); });
 function figure(){
-  const k = Math.max(0.72, Math.min(1.6, (st.w/((st.h/100)**2))/22));
-  const sc = 0.8 + (st.h-140)/50*0.2, cx=40, top=230-220*sc;
-  const y = t => (top + t*220*sc).toFixed(1), x = d => (d*k).toFixed(1);
-  $('fig').innerHTML = `<line x1="0" x2="80" y1="${top}" y2="${top}" stroke="currentColor" stroke-dasharray="2 3" opacity=".4"/>
-  <g fill="currentColor"><circle cx="${cx}" cy="${y(.07)}" r="${(11*sc).toFixed(1)}"/>
-  <path d="M${cx-x(13)} ${y(.15)} Q${cx} ${y(.13)} ${cx+ +x(13)} ${y(.15)} L${cx+ +x(15)} ${y(.3)} Q${cx+ +x(10)} ${y(.38)} ${cx+ +x(11)} ${y(.44)} Q${cx+ +x(19)} ${y(.55)} ${cx+ +x(14)} ${y(.62)} L${cx+ +x(9)} ${y(1)} L${cx+2} ${y(1)} L${cx} ${y(.66)} L${cx-2} ${y(1)} L${cx-x(9)} ${y(1)} L${cx-x(14)} ${y(.62)} Q${cx-x(19)} ${y(.55)} ${cx-x(11)} ${y(.44)} Q${cx-x(10)} ${y(.38)} ${cx-x(15)} ${y(.3)} Z"/></g>`;
+  figTo('fig', {c:typical('chest'), s:typical('stomach'), hp:typical('hips'), h:st.h}, []);
 }
 
 // step 2
@@ -576,19 +573,24 @@ function bodyUpdate(){
   bodyTo({c:cmVal('chest'), s:cmVal('stomach'), hp:cmVal('hips')}, p.areas);
 }
 // realistic front silhouette in cm units; animates toward the target measurements
-let bodyNow = null, bodyRaf = 0;
-function bodyTo(t, areas){
-  if (!bodyNow) bodyNow = {...t};
-  const from = {...bodyNow}, t0 = performance.now();
-  cancelAnimationFrame(bodyRaf);
+// one figure style for both steps: #fig (height & weight) and #bfig (body shape). Each keeps its own animation state.
+const FIGS = {};
+function figTo(id, t, areas){
+  const F = FIGS[id] ||= {now:null, raf:0};
+  // keep the drawing realistic even if a cm value is very small or very large
+  t = {...t, c:Math.max(60, Math.min(200, t.c)), s:Math.max(50, Math.min(200, t.s)), hp:Math.max(65, Math.min(200, t.hp))};
+  if (!F.now) F.now = {...t};
+  const from = {...F.now}, t0 = performance.now();
+  cancelAnimationFrame(F.raf);
   const step = now => { const k = Math.min(1, (now - t0)/260), e = 1 - Math.pow(1-k, 3);
-    for (const x in t) bodyNow[x] = from[x] + (t[x]-from[x])*e;
-    drawBody(bodyNow, areas); if (k<1) bodyRaf = requestAnimationFrame(step); };
-  bodyRaf = requestAnimationFrame(step);
+    for (const x in t) F.now[x] = from[x] + (t[x]-from[x])*e;
+    drawBody(id, F.now, areas); if (k<1) F.raf = requestAnimationFrame(step); };
+  F.raf = requestAnimationFrame(step);
 }
-function drawBody({c, s, hp}, areas){
-  const el = $('bfig'); if (!el) return;
-  const h = st.h, H = h/7.6;                    // head height
+const bodyTo = (t, areas) => figTo('bfig', {...t, h:st.h}, areas);
+function drawBody(id, {c, s, hp, h}, areas){
+  const el = $(id); if (!el) return;
+  const H = h/7.6;                    // head height
   const bw = c*0.165, ww = s*0.155, hw = hp*0.17, sh = Math.max(bw*1.08, 17 + (c-90)*0.08);
   const Y = f => f*H;
   // right outline, top to crotch
@@ -604,8 +606,9 @@ function drawBody({c, s, hp}, areas){
   const arm = side => { const sx = side*sh, ex = side*(Math.max(bw, ww)+4.2), wx = side*(hw+2.6);
     return `M${f(sx)} ${f(Y(1.48))}Q${f(sx+side*3.5)} ${f(Y(1.55))} ${f(ex+side*1.8)} ${f(Y(2.9))}L${f(wx+side*1.2)} ${f(Y(3.95))}Q${f(wx)} ${f(Y(4.15))} ${f(wx-side*1.6)} ${f(Y(3.95))}L${f(ex-side*1.4)} ${f(Y(2.95))}Q${f(sx-side*0.5)} ${f(Y(2.2))} ${f(sx-side*2)} ${f(Y(1.75))}Z`; };
   const band = (a, y, w) => areas.includes(a) ? `<ellipse cx="0" cy="${f(y)}" rx="${f(w+1.2)}" ry="${f(w*0.16+0.8)}" fill="none" stroke="var(--pink)" stroke-width="${bodyFocus===a?1.1:0.6}" opacity="${bodyFocus===a?1:0.45}"/>` : '';
-  const W = Math.max(hw+6, sh+6, 40);
-  el.setAttribute('viewBox', `${f(-W)} -4 ${f(W*2)} ${f(h+8)}`);
+  // fixed frame (200 cm tall, feet on the floor) so taller / heavier really looks taller / wider
+  const W = 46, top = 196 - h;
+  el.setAttribute('viewBox', `${f(-W)} ${f(-4-top)} ${f(W*2)} 204`);
   el.innerHTML = `<ellipse cx="0" cy="${f(Y(.5))}" rx="${f(H*0.37)}" ry="${f(H*0.5)}" fill="currentColor"/>
     <path d="${d}" fill="currentColor"/><path d="${arm(1)}" fill="currentColor"/><path d="${arm(-1)}" fill="currentColor"/>
     ${band('chest', Y(2.15), bw)}${band('stomach', Y(3.2), ww)}${band('hips', Y(3.95), hw)}`;
@@ -713,7 +716,7 @@ function render(){
     figure();
     $('est').textContent = over() ? '—' : list()[baseIdx().i].n;
     const bk = st.piece + lang;
-    if (bk!==bodyKey){ bodyKey = bk; bodyNow = null; $('areas').innerHTML = areasHTML(); }
+    if (bk!==bodyKey){ bodyKey = bk; FIGS.bfig = null; $('areas').innerHTML = areasHTML(); }
     bodyUpdate();
     $('fits').innerHTML = fitsHTML();
     if (st.step===4) result();
